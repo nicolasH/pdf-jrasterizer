@@ -64,12 +64,7 @@ public class OpenPanel {
 		// later : choose destination, type, resolution. Later
 
 		SpinnerNumberModel m = new SpinnerNumberModel(100, 50, 600, 50);
-		m.addChangeListener(new ChangeListener() {
-			
-			public void stateChanged(ChangeEvent e) {
-				SwingUtilities.invokeLater(new UpdateResolutionLabel());
-			}
-		});
+		m.addChangeListener(new UpdateResolutionAction());
 
 		resolutionSpinner = new JSpinner(m);
 
@@ -131,6 +126,13 @@ public class OpenPanel {
 		}
 	}
 
+	private class UpdateResolutionAction implements ChangeListener {
+
+		public void stateChanged(ChangeEvent e) {
+			SwingUtilities.invokeLater(new UpdateResolutionLabel());
+		}
+	}
+
 	private class UpdateResolutionLabel implements Runnable {
 		public void run() {
 			int rez = ((SpinnerNumberModel) resolutionSpinner.getModel()).getNumber().intValue();
@@ -149,12 +151,12 @@ public class OpenPanel {
 
 				BufferedImage image = ren.getImageFromPDF(1, rez);
 				img = image;
-				Runnable r = new Runnable() {
-					public void run() {
-						gui.setImage(img);
-					};
-				};
-				SwingUtilities.invokeLater(r);
+				// Runnable r = new Runnable() {
+				// public void run() {
+				gui.setImage(img);
+				// };
+				// };
+				// SwingUtilities.invokeLater(r);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
@@ -184,7 +186,7 @@ public class OpenPanel {
 	}
 
 	private class ShowPDFImageListener implements ActionListener {
-		
+
 		public void actionPerformed(ActionEvent e) {
 			imageRendererThread = new Thread(new RenderAction());
 			imageRendererThread.start();
@@ -192,5 +194,4 @@ public class OpenPanel {
 
 		}
 	}
-
 }

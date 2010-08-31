@@ -1,4 +1,0 @@
-The aim of the project is to allow users to create images out of PDF files. It is based on the java.net pdf-renderer library accessible at https://pdf-renderer.dev.java.net/.
-This project is licensed under the LGPL as is the pdf-renderer project.
-
-Currently you can create the app by running the `mvn package appassembler:assemble` command, if you have java, maven and a bit of luck. The resulting bash/bat script should end up un the target/scripts/bin/ directory.

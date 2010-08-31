@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jnlp spec="1.0+" codebase="http://www.niconomicon.net/tests/maven/net/niconomicon/pdf-jrasterizer/" 
+<!--href="pdf-jrasterizer.jnlp"-->>
+    <information>
+        <title>PDF-JRasterizer</title>
+        <vendor>Nicolas Hoibian</vendor>
+        <description>pdf-jrasterizer</description>
+        <description kind="short">pdf-jrasterizer</description>
+        <homepage href=""/>
+
+        <offline-allowed/>
+    </information>
+  <security>
+    <all-permissions></all-permissions>
+  </security>
+
+    <resources>
+        <j2se version="1.6+" java-vm-args="-Xmx1024M"/>
+        <!--
+        
+        <jar href="pdf-renderer-1.6.2.jar" />
+        <jar href="pdf-jrasterizer-0.0.1-SNAPSHOT.jar" main="true" download="eager"/>
+        -->
+        $dependencies
+	</resources>
+	<application-desc main-class="$mainClass">
+    <!--
+    <application-desc main-class="net.niconomicon.jrasterizer.PDFRasterizerGUI">-->
+        <!--argument>-noThumb</argument-->
+    </application-desc>
+</jnlp>
