@@ -86,15 +86,16 @@
 						<!--storetype>fillme</storetype -->
 						<!--validity>fillme</validity -->
 						<!-- only required for generating the keystore -->
-						<!---->
-						<dnameCn>niconomicon</dnameCn>
-						<dnameOu>net</dnameOu>
-						<dnameO>fillme</dnameO>
-						<dnameL>fillme</dnameL>
-						<dnameSt>fillme</dnameSt>
-						<dnameC>fillme</dnameC>
-						<!-- -->
-						<verify>true</verify> <!-- verify that the signing operation succeeded -->
+
+						<dnameCn>niconomicon.net</dnameCn>
+						<dnameOu>engineering</dnameOu>
+						<dnameO>niconomicon.net</dnameO>
+						<dnameL>Geneva</dnameL>
+						<dnameSt>Geneva</dnameSt>
+						<dnameC>Switzerland</dnameC>
+						
+						<!-- verify that the signing operation succeeded -->
+						<verify>true</verify> 
 						<!-- KEYSTORE MANAGEMENT -->
 						<!-- -->
 						<keystoreConfig>
@@ -103,13 +104,19 @@
 						</keystoreConfig>
 					</sign>
 					<!-- BUILDING PROCESS -->
+					
 					<pack200>true</pack200>
-					<gzip>true</gzip> <!-- default force when pack200 false, true when pack200 selected ?? -->
+					<gzip>true</gzip>
+					
+					 <!-- default force when pack200 false, true when pack200 selected ?? -->
 					<!-- causes a version attribute to be output in each jar resource element, 
 						optional, default is false -->
-					<outputJarVersions>true</outputJarVersions>
+					<outputJarVersions>false</outputJarVersions>
+					
 					<!--install>false</install --> <!-- not yet supported -->
-					<verbose>true</verbose>
+					<verbose>false</verbose>
+					<!-- deploy command : -->
+					<!-- scp -r target/jnlp/* nhoibian_niconomicon@ssh.phx.nearlyfreespeech.net:/home/public/tests/maven/net/niconomicon/pdf-jrasterizer/ -->
 				</configuration>
 			</plugin>
 		</plugins>
