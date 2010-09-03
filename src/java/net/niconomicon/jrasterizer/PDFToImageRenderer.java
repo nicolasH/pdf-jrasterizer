@@ -2,6 +2,7 @@ package net.niconomicon.jrasterizer;
 
 import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -97,6 +98,39 @@ public class PDFToImageRenderer {
 		Image image = page.getImage(pageSize.width, pageSize.height, null, null, true, true);
 
 		return (BufferedImage) image;
+	}
+
+	/**
+	 * 
+	 * @param pageNum
+	 * @param resolution
+	 * @return a 400x400 pixel image from the center of the page.
+	 */
+	private BufferedImage getPreview(int pageNum, int resolution) {
+		if (pdf == null) { throw new IllegalArgumentException("You want to render the page #" + pageNum + " but no PDF has been set."); }
+
+		int numPages = pdf.getNumPages();
+
+		if (pageNum < 1) { throw new IllegalArgumentException("You want to render the page #" + pageNum + " but the pdf starts at page #1"); }
+		if (pageNum > numPages) { throw new IllegalArgumentException("You want to render the page #" + pageNum + " but the pdf only has #" + numPages + " pages"); }
+
+		PDFPage page = pdf.getPage(pageNum);
+		Rectangle2D r2d = page.getBBox();
+
+		double width = r2d.getWidth();
+		double height = r2d.getHeight();
+		double r = resolution / usedDefaultResolution;
+		width *= r;
+		height *= r;
+
+		// Getting the correct dimensions.
+		Dimension pageSize = page.getUnstretchedSize((int) width, (int) height, null);
+		Rectangle clip = new Rectangle((int) width - 400 / 2, (int) height - 400 / 2, 400, 400);
+		// get the new image, waiting until the pdf has been fully rendered.
+		Image image = page.getImage(pageSize.width, pageSize.height, clip, null, true, true);
+
+		return (BufferedImage) image;
+
 	}
 
 	/**
