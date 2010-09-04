@@ -104,9 +104,10 @@ public class PDFToImageRenderer {
 	 * 
 	 * @param pageNum
 	 * @param resolution
-	 * @return a 400x400 pixel image from the center of the page.
+	 * @param clipSize
+	 * @return a clip from the center of the page, of at most clipSizexclipSize pixels.
 	 */
-	private BufferedImage getPreview(int pageNum, int resolution) {
+	private BufferedImage getExtract(int pageNum, int resolution, int clipSize) {
 		if (pdf == null) { throw new IllegalArgumentException("You want to render the page #" + pageNum + " but no PDF has been set."); }
 
 		int numPages = pdf.getNumPages();
@@ -125,7 +126,18 @@ public class PDFToImageRenderer {
 
 		// Getting the correct dimensions.
 		Dimension pageSize = page.getUnstretchedSize((int) width, (int) height, null);
-		Rectangle clip = new Rectangle((int) width - 400 / 2, (int) height - 400 / 2, 400, 400);
+		int cX = (int) (((double) (width - clipSize)) / 2);
+		int cY = (int) (((double) (height - clipSize)) / 2);
+		if (cX < 0) {
+			cX = 0;
+		}
+		if (cY < 0) {
+			cY = 0;
+		}
+		int cW = (int) Math.min(width, clipSize);
+		int cH = (int) Math.min(height, clipSize);
+
+		Rectangle clip = new Rectangle(cX, cY, cW, cH);
 		// get the new image, waiting until the pdf has been fully rendered.
 		Image image = page.getImage(pageSize.width, pageSize.height, clip, null, true, true);
 
