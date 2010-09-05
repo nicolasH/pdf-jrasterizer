@@ -107,7 +107,7 @@ public class PDFToImageRenderer {
 	 * @param clipSize
 	 * @return a clip from the center of the page, of at most clipSizexclipSize pixels.
 	 */
-	private BufferedImage getExtract(int pageNum, int resolution, int clipSize) {
+	public BufferedImage getExtract(int pageNum, int resolution, int clipSize) {
 		if (pdf == null) { throw new IllegalArgumentException("You want to render the page #" + pageNum + " but no PDF has been set."); }
 
 		int numPages = pdf.getNumPages();

@@ -72,6 +72,9 @@ public class OpenPanel {
 
 		JLabel res = new JLabel("Resolution (dpi) : ");
 
+//		JButton preview = new JButton("Preview");
+//		preview.addActionListener(new ShowPDFResolutionsPreviewListener());
+
 		JButton view = new JButton("show");
 		view.addActionListener(new ShowPDFImageListener());
 
@@ -100,6 +103,10 @@ public class OpenPanel {
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.weightx = 1.0;
 		contentPane.add(resolutionLabel, c);
+
+//		c = new GridBagConstraints();
+//		c.anchor = GridBagConstraints.LINE_END;
+//		contentPane.add(preview, c);
 
 		c = new GridBagConstraints();
 		c.anchor = GridBagConstraints.LINE_END;
@@ -163,6 +170,17 @@ public class OpenPanel {
 		}
 	}
 
+	private class ExtractAction implements Runnable {
+
+		public void run() {
+			try {
+				gui.showExtracts(ren);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+	}
+
 	private class InputActionListener implements ActionListener {
 
 		public void actionPerformed(ActionEvent arg0) {
@@ -190,8 +208,15 @@ public class OpenPanel {
 		public void actionPerformed(ActionEvent e) {
 			imageRendererThread = new Thread(new RenderAction());
 			imageRendererThread.start();
-			// SwingUtilities.invokeLater(updateResolution);
-
 		}
 	}
+
+	private class ShowPDFResolutionsPreviewListener implements ActionListener {
+
+		public void actionPerformed(ActionEvent e) {
+			Thread prev = new Thread(new ExtractAction());
+			prev.start();
+		}
+	}
+
 }

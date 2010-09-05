@@ -19,13 +19,13 @@
 		</repository>
 	</distributionManagement>
 	<build>
+		<sourceDirectory>src</sourceDirectory>
 		<extensions>
 			<extension>
 				<groupId>org.apache.maven.wagon</groupId>
 				<artifactId>wagon-ssh-external</artifactId>
 			</extension>
 		</extensions>
-		<sourceDirectory>src</sourceDirectory>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

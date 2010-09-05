@@ -25,11 +25,15 @@ public class PDFRasterizerGUI {
 	JPanel contentPane;
 
 	DisplayJAI jaiPanel;
+	Previewer previewer;
 
 	SavePanel savePanel;
 	OpenPanel openPanel;
 
 	BufferedImage img;
+
+	JScrollPane previewSP;
+	JScrollPane jaiSP;
 
 	public PDFRasterizerGUI() {
 
@@ -42,13 +46,17 @@ public class PDFRasterizerGUI {
 		savePanel = new SavePanel(this);
 
 		jaiPanel = new DisplayJAI();
-		JScrollPane sp = new JScrollPane(jaiPanel);
+		jaiSP = new JScrollPane(jaiPanel);
+
+		previewer = new Previewer();
+		previewSP = new JScrollPane(previewer);
 
 		JTabbedPane p = new JTabbedPane();
 		p.add(openPanel.contentPane);
 		p.add(savePanel.contentPane);
 		contentPane.add(p, BorderLayout.NORTH);
-		contentPane.add(sp, BorderLayout.CENTER);
+		contentPane.add(jaiSP, BorderLayout.CENTER);
+//		contentPane.add(previewSP, BorderLayout.SOUTH);
 		contentPane.setPreferredSize(new Dimension(700, 600));
 		frame.setContentPane(contentPane);
 
@@ -63,7 +71,14 @@ public class PDFRasterizerGUI {
 
 	public void setImage(BufferedImage image) {
 		this.img = image;
+
 		jaiPanel.set(this.img);
+
+	}
+
+	public void showExtracts(PDFToImageRenderer ren) {
+		previewer.setPDFToPreview(ren);
+
 	}
 
 	public BufferedImage getImage() {
