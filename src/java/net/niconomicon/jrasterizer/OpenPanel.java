@@ -72,8 +72,8 @@ public class OpenPanel {
 
 		JLabel res = new JLabel("Resolution (dpi) : ");
 
-//		JButton preview = new JButton("Preview");
-//		preview.addActionListener(new ShowPDFResolutionsPreviewListener());
+		JButton preview = new JButton("Preview");
+		preview.addActionListener(new ShowPDFResolutionsPreviewListener());
 
 		JButton view = new JButton("show");
 		view.addActionListener(new ShowPDFImageListener());
@@ -104,9 +104,9 @@ public class OpenPanel {
 		c.weightx = 1.0;
 		contentPane.add(resolutionLabel, c);
 
-//		c = new GridBagConstraints();
-//		c.anchor = GridBagConstraints.LINE_END;
-//		contentPane.add(preview, c);
+		c = new GridBagConstraints();
+		c.anchor = GridBagConstraints.LINE_END;
+		contentPane.add(preview, c);
 
 		c = new GridBagConstraints();
 		c.anchor = GridBagConstraints.LINE_END;

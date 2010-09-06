@@ -1,6 +1,7 @@
 package net.niconomicon.jrasterizer;
 
 import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
@@ -126,8 +127,8 @@ public class PDFToImageRenderer {
 
 		// Getting the correct dimensions.
 		Dimension pageSize = page.getUnstretchedSize((int) width, (int) height, null);
-		int cX = (int) (((double) (width - clipSize)) / 2);
-		int cY = (int) (((double) (height - clipSize)) / 2);
+		int cX = (int) (((double) (pageSize.getWidth() - clipSize)) / 2);
+		int cY = (int) (((double) (pageSize.getHeight() - clipSize)) / 2);
 		if (cX < 0) {
 			cX = 0;
 		}
@@ -138,10 +139,12 @@ public class PDFToImageRenderer {
 		int cH = (int) Math.min(height, clipSize);
 
 		Rectangle clip = new Rectangle(cX, cY, cW, cH);
+		System.out.println("Clip : " + clip);
 		// get the new image, waiting until the pdf has been fully rendered.
-		Image image = page.getImage(pageSize.width, pageSize.height, clip, null, true, true);
-
-		return (BufferedImage) image;
+		
+		BufferedImage image = (BufferedImage) page.getImage(pageSize.width, pageSize.height, null, null, true, true);
+		return 	image.getSubimage(cX, cY, cW, cH);
+//		return (BufferedImage) image;
 
 	}
 
