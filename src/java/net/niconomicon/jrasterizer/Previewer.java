@@ -20,7 +20,7 @@ public class Previewer extends JPanel {
 	public Previewer() {
 		super();
 		this.setLayout(new GridLayout(2, 0));
-		this.setPreferredSize(new Dimension(400, 400));
+		this.setPreferredSize(new Dimension(800, 400));
 	}
 
 	public void setPDFToPreview(PDFToImageRenderer renderer) {
@@ -30,10 +30,15 @@ public class Previewer extends JPanel {
 			System.out.println("Trying to get the extract at resolution : " + i);
 			BufferedImage img = renderer.getExtract(1, i, 200);
 			System.out.println("icon infos : " + img.getHeight() + " by " + img.getWidth());
-			DisplayJAI jai = new DisplayJAI();
-			jai.set(img);
+			Dimension d = renderer.getImageDimForResolution(1, i);
+			System.out.println(d);
+			SinglePreview pre = new SinglePreview(img, i, d.width, d.height);
+//			DisplayJAI jai = new DisplayJAI();
+//			jai.set(img);
 			// JLabel l = new JLabel("Resolution : " + i);
-			this.add(jai);
+//			this.add(jai);
+			this.add(pre);
+			this.revalidate();
 
 		}
 		this.revalidate();

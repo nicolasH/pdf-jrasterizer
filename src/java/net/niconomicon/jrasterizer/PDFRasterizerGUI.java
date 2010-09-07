@@ -56,7 +56,6 @@ public class PDFRasterizerGUI {
 		p.add(savePanel.contentPane);
 		contentPane.add(p, BorderLayout.NORTH);
 		contentPane.add(previewSP, BorderLayout.CENTER);
-//		contentPane.add(previewSP, BorderLayout.SOUTH);
 		contentPane.setPreferredSize(new Dimension(700, 600));
 		frame.setContentPane(contentPane);
 
@@ -74,14 +73,20 @@ public class PDFRasterizerGUI {
 
 		jaiPanel.set(this.img);
 		contentPane.remove(previewSP);
+		previewSP.setVisible(false);
+		jaiSP.setVisible(true);
 		contentPane.add(jaiSP,BorderLayout.CENTER);
+		contentPane.revalidate();
 
 	}
 
 	public void showExtracts(PDFToImageRenderer ren) {
-		previewer.setPDFToPreview(ren);
 		contentPane.remove(jaiSP);
+		jaiSP.setVisible(false);
+		previewSP.setVisible(true);
 		contentPane.add(previewSP,BorderLayout.CENTER);
+		contentPane.revalidate();
+		previewer.setPDFToPreview(ren);
 	}
 
 	public BufferedImage getImage() {
