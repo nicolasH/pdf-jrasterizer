@@ -3,11 +3,16 @@
  */
 package net.niconomicon.jrasterizer;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.image.BufferedImage;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 
 import com.sun.media.jai.widget.DisplayJAI;
@@ -18,70 +23,72 @@ import com.sun.media.jai.widget.DisplayJAI;
  */
 public class SinglePreview extends JPanel {
 	BufferedImage extract;
-	int width;
-	int height;
+	int imgWidth;
+	int imgHeight;
 	int resolution;
 
 	public SinglePreview(BufferedImage img, int resolution, int width, int height) {
-		super(new GridBagLayout());
+		super(new BorderLayout());
 		this.extract = img;
 		this.resolution = resolution;
-		this.width = width;
-		this.height = height;
+		this.imgWidth = width;
+		this.imgHeight = height;
 		init();
+		this.setPreferredSize(new Dimension(202, 202));
 	}
 
 	private void init() {
 		DisplayJAI d = new DisplayJAI();
 		d.set(extract);
 
+		JPanel labels = new JPanel(new GridBagLayout());
 		JLabel l;
-		// this.setLayout(new GridBagLayout());
 		GridBagConstraints c;
 
+		labels.setOpaque(false);
+		l = new JLabel("Resolution : ");
 		c = new GridBagConstraints();
+		c.gridy = 0;
 		c.gridx = 0;
-		c.gridy = 0;
-		c.gridheight = 5;
-		this.add(d, c);
+		c.anchor = GridBagConstraints.NORTHEAST;
+		labels.add(l, c);
 
-		l = new JLabel("Resolution :");
+		l = new JLabel("Dimensions : ");
+		c = new GridBagConstraints();
+		c.gridy = 1;
+		c.gridx = 0;
+		c.anchor = GridBagConstraints.NORTHEAST;
+		labels.add(l, c);
+
+		l = new JLabel(" ~ " + resolution + " dpi");
 		c = new GridBagConstraints();
 		c.gridy = 0;
 		c.gridx = 1;
-		this.add(l, c);
+		c.anchor = GridBagConstraints.NORTHWEST;
+		labels.add(l, c);
 
-		l = new JLabel(" ");
+		l = new JLabel(imgWidth + "x" + imgHeight + " pixels");
 		c = new GridBagConstraints();
 		c.gridy = 1;
 		c.gridx = 1;
-		this.add(l, c);
+		c.anchor = GridBagConstraints.NORTHWEST;
+		labels.add(l, c);
 
-		l = new JLabel("Dimensions :");
+		l = new JLabel("Extract (200x200 pixels) : ");
 		c = new GridBagConstraints();
 		c.gridy = 2;
-		c.gridx = 1;
-		this.add(l, c);
+		c.gridx = 0;
+		c.gridwidth = 2;
+		c.anchor = GridBagConstraints.CENTER;
+		labels.add(l, c);
 
-		l = new JLabel("~ " + resolution + " dpi");
-		c = new GridBagConstraints();
-		c.gridy = 0;
-		c.gridx = 2;
-		this.add(l, c);
+		labels.revalidate();
+		// this.add(d, Integer.valueOf(1));
+		// this.add(labels, Integer.valueOf(2));
+		// this.revalidate();
+		this.add(d, BorderLayout.CENTER);
+		this.add(labels, BorderLayout.NORTH);
 
-		l = new JLabel(" ");
-		c = new GridBagConstraints();
-		c.gridy = 1;
-		c.gridx = 2;
-		this.add(l, c);
-
-		l = new JLabel(width + "x" + height);
-		c = new GridBagConstraints();
-		c.gridy = 2;
-		c.gridx = 2;
-		this.add(l, c);
-		
-		this.revalidate();
 	}
 
 }
