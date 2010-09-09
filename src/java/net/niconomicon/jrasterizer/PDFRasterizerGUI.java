@@ -75,7 +75,8 @@ public class PDFRasterizerGUI {
 		contentPane.remove(previewSP);
 		previewSP.setVisible(false);
 		jaiSP.setVisible(true);
-		contentPane.add(jaiSP,BorderLayout.CENTER);
+		contentPane.add(jaiSP, BorderLayout.CENTER);
+		jaiSP.revalidate();
 		contentPane.revalidate();
 
 	}
@@ -84,9 +85,11 @@ public class PDFRasterizerGUI {
 		contentPane.remove(jaiSP);
 		jaiSP.setVisible(false);
 		previewSP.setVisible(true);
-		contentPane.add(previewSP,BorderLayout.CENTER);
-		contentPane.revalidate();
+		contentPane.add(previewSP, BorderLayout.CENTER);
 		previewer.setPDFToPreview(ren);
+		previewSP.revalidate();
+		contentPane.revalidate();
+		previewSP.repaint();
 	}
 
 	public BufferedImage getImage() {

@@ -17,25 +17,38 @@ import com.sun.media.jai.widget.DisplayJAI;
  */
 public class Previewer extends JPanel {
 
+	public int step_dpi = 66;
+	public int step_count = 5;
+
+	public int extract_side = 200;
+
 	public Previewer() {
 		super();
-		this.setLayout(new GridLayout(0, 6));
-		this.setPreferredSize(new Dimension(810, 420));
+		this.setPreferredSize(new Dimension((extract_side+2) * step_count, 420));
 	}
 
 	public void setPDFToPreview(PDFToImageRenderer renderer) {
 		this.removeAll();
-		this.setLayout(new GridLayout(0, 4));
-		for (int i = 50; i <= 200; i += 50) {
-			System.out.println("Trying to get the extract at resolution : " + i);
-			BufferedImage img = renderer.getExtract(1, i, 200);
-			System.out.println("icon infos : " + img.getHeight() + " by " + img.getWidth());
-			Dimension d = renderer.getImageDimForResolution(1, i);
-			System.out.println(d);
-			SinglePreview pre = new SinglePreview(img, i, d.width, d.height);
-			this.add(pre);
-			this.revalidate();
-
+		this.revalidate();
+		int n = this.getComponentCount();
+		for (int i = 0; i < n; i++) {
+			this.getComponent(i).setVisible(false);
+		}
+		this.repaint();
+		this.setLayout(new GridLayout(0, step_count));
+		int maxPage = renderer.getPageCount();
+		for (int page = 1; page <= maxPage; page++) {
+			for (int step = 1; step <= step_count; step++) {
+				int res = step * step_dpi;
+				System.out.println("Trying to get the extract at resolution : " + res);
+				BufferedImage img = renderer.getExtract(page, res, extract_side);
+				System.out.println("icon infos : " + img.getHeight() + " by " + img.getWidth());
+				Dimension d = renderer.getImageDimForResolution(1, res);
+				System.out.println(d);
+				SinglePreview pre = new SinglePreview(img, page, maxPage, res, extract_side, d.width, d.height);
+				this.add(pre);
+				this.revalidate();
+			}
 		}
 		this.revalidate();
 	}

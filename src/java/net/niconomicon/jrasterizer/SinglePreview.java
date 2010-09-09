@@ -23,21 +23,28 @@ import com.sun.media.jai.widget.DisplayJAI;
  */
 public class SinglePreview extends JPanel {
 	BufferedImage extract;
-	int imgWidth;
-	int imgHeight;
-	int resolution;
+	final int imgWidth;
+	final int imgHeight;
+	final int resolution;
+	final int page;
+	final int maxPage;
+	final int extractSide;
 
-	public SinglePreview(BufferedImage img, int resolution, int width, int height) {
+	public SinglePreview(BufferedImage img, int page, int pages, int resolution, int extractSide, int width, int height) {
 		super(new BorderLayout());
 		this.extract = img;
 		this.resolution = resolution;
+		this.page = page;
+		this.maxPage = pages;
+		this.extractSide = extractSide;
 		this.imgWidth = width;
 		this.imgHeight = height;
 		init();
-		this.setPreferredSize(new Dimension(202, 202));
 	}
 
 	private void init() {
+		this.setPreferredSize(new Dimension(extractSide, extractSide));
+
 		DisplayJAI d = new DisplayJAI();
 		d.set(extract);
 
@@ -45,50 +52,70 @@ public class SinglePreview extends JPanel {
 		JLabel l;
 		GridBagConstraints c;
 
-		labels.setOpaque(false);
-		l = new JLabel("Resolution : ");
+		l = new JLabel("Page");
 		c = new GridBagConstraints();
 		c.gridy = 0;
 		c.gridx = 0;
-		c.anchor = GridBagConstraints.NORTHEAST;
+		c.anchor = GridBagConstraints.NORTHWEST;
 		labels.add(l, c);
 
-		l = new JLabel("Dimensions : ");
+		l = new JLabel("Resolution");
 		c = new GridBagConstraints();
 		c.gridy = 1;
 		c.gridx = 0;
-		c.anchor = GridBagConstraints.NORTHEAST;
-		labels.add(l, c);
-
-		l = new JLabel(" ~ " + resolution + " dpi");
-		c = new GridBagConstraints();
-		c.gridy = 0;
-		c.gridx = 1;
 		c.anchor = GridBagConstraints.NORTHWEST;
 		labels.add(l, c);
 
-		l = new JLabel(imgWidth + "x" + imgHeight + " pixels");
-		c = new GridBagConstraints();
-		c.gridy = 1;
-		c.gridx = 1;
-		c.anchor = GridBagConstraints.NORTHWEST;
-		labels.add(l, c);
-
-		l = new JLabel("Extract (200x200 pixels) : ");
+		l = new JLabel("Dimensions");
 		c = new GridBagConstraints();
 		c.gridy = 2;
 		c.gridx = 0;
-		c.gridwidth = 2;
-		c.anchor = GridBagConstraints.CENTER;
+		c.anchor = GridBagConstraints.NORTHWEST;
 		labels.add(l, c);
 
-		labels.revalidate();
-		// this.add(d, Integer.valueOf(1));
-		// this.add(labels, Integer.valueOf(2));
-		// this.revalidate();
-		this.add(d, BorderLayout.CENTER);
-		this.add(labels, BorderLayout.NORTH);
+		l = new JLabel(": " + page + " /" + maxPage);
+		c = new GridBagConstraints();
+		c.gridy = 0;
+		c.gridx = 1;
+		c.anchor = GridBagConstraints.NORTHWEST;
+		labels.add(l, c);
 
+		l = new JLabel(": ~ " + resolution + " dpi");
+		c = new GridBagConstraints();
+		c.gridy = 1;
+		c.gridx = 1;
+		c.anchor = GridBagConstraints.NORTHWEST;
+		labels.add(l, c);
+
+		l = new JLabel(": " + imgWidth + "x" + imgHeight + " px");
+		c = new GridBagConstraints();
+		c.gridy = 2;
+		c.gridx = 1;
+		c.anchor = GridBagConstraints.NORTHWEST;
+		labels.add(l, c);
+
+		labels.setBackground(new Color(192, 192, 192, 192));
+
+		labels.revalidate();
+
+		// Boundaries
+		d.setBounds(1, 1, extractSide, extractSide);
+
+		int lh = 60;
+		int ly = extractSide - lh;
+		labels.setBounds(1, ly + 1, extractSide, lh);
+
+		JLabel background = new JLabel(" ");
+		background.setBackground(Color.black);
+		background.setForeground(Color.black);
+		background.setBounds(0, 0, 202, 202);
+		background.setOpaque(true);
+		JLayeredPane pane = new JLayeredPane();
+		pane.add(background, new Integer(1));
+		pane.add(d, new Integer(2));
+		pane.add(labels, new Integer(3));
+
+		this.add(pane, BorderLayout.CENTER);
 	}
 
 }
