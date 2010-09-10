@@ -116,17 +116,8 @@ public class PDFToImageRenderer {
 		if (pageNum < 1) { throw new IllegalArgumentException("You want to render the page #" + pageNum + " but the pdf starts at page #1"); }
 		if (pageNum > numPages) { throw new IllegalArgumentException("You want to render the page #" + pageNum + " but the pdf only has #" + numPages + " pages"); }
 
-		PDFPage page = pdf.getPage(pageNum);
-		Rectangle2D r2d = page.getBBox();
+		Dimension pageSize = getImageDimForResolution(pageNum, resolution);
 
-		double width = r2d.getWidth();
-		double height = r2d.getHeight();
-		double r = resolution / usedDefaultResolution;
-		width *= r;
-		height *= r;
-
-		// Getting the correct dimensions.
-		Dimension pageSize = page.getUnstretchedSize((int) width, (int) height, null);
 		int cX = (int) (((double) (pageSize.getWidth() - clipSize)) / 2);
 		int cY = (int) (((double) (pageSize.getHeight() - clipSize)) / 2);
 		if (cX < 0) {
@@ -135,16 +126,17 @@ public class PDFToImageRenderer {
 		if (cY < 0) {
 			cY = 0;
 		}
-		int cW = (int) Math.min(width, clipSize);
-		int cH = (int) Math.min(height, clipSize);
+		int cW = (int) Math.min(pageSize.width, clipSize);
+		int cH = (int) Math.min(pageSize.height, clipSize);
 
 		Rectangle clip = new Rectangle(cX, cY, cW, cH);
 		System.out.println("Clip : " + clip);
 		// get the new image, waiting until the pdf has been fully rendered.
-		
-		BufferedImage image = (BufferedImage) page.getImage(pageSize.width, pageSize.height, null, null, true, true);
-		return 	image.getSubimage(cX, cY, cW, cH);
-//		return (BufferedImage) image;
+		// BufferedImage image = (BufferedImage) page.getImage(pageSize.width, pageSize.height, null, null, true, true);
+		BufferedImage image = (BufferedImage) pdf.getPage(pageNum).getImage(pageSize.width, pageSize.height, null, null, true, true);
+		System.out.println("image " + image.getWidth() + " + " + image.getHeight());
+		return image.getSubimage(cX, cY, cW, cH);
+		// return (BufferedImage) image;
 
 	}
 

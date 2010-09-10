@@ -6,11 +6,12 @@ package net.niconomicon.jrasterizer;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.image.BufferedImage;
 
-import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
@@ -44,9 +45,6 @@ public class SinglePreview extends JPanel {
 
 	private void init() {
 		this.setPreferredSize(new Dimension(extractSide, extractSide));
-
-		DisplayJAI d = new DisplayJAI();
-		d.set(extract);
 
 		JPanel labels = new JPanel(new GridBagLayout());
 		JLabel l;
@@ -99,7 +97,7 @@ public class SinglePreview extends JPanel {
 		labels.revalidate();
 
 		// Boundaries
-		d.setBounds(1, 1, extractSide, extractSide);
+//		d.setBounds(1, 1, extractSide, extractSide);
 
 		int lh = 60;
 		int ly = extractSide - lh;
@@ -110,12 +108,30 @@ public class SinglePreview extends JPanel {
 		background.setForeground(Color.black);
 		background.setBounds(0, 0, 202, 202);
 		background.setOpaque(true);
+
+		JPanel image = new BackgroundPanel();
+		image.setLayout(new BorderLayout());
+		if (extract == null) {
+			l = new JLabel("Too big to preview");
+			image.add(l, BorderLayout.NORTH);
+			image.setOpaque(true);
+		} else {
+			image.setOpaque(false);
+		}
+		image.setBounds(0, 0, extractSide, extractSide);
 		JLayeredPane pane = new JLayeredPane();
 		pane.add(background, new Integer(1));
-		pane.add(d, new Integer(2));
+		pane.add(image, new Integer(2));
 		pane.add(labels, new Integer(3));
 
 		this.add(pane, BorderLayout.CENTER);
 	}
 
+	public class BackgroundPanel extends JPanel {
+		protected void paintComponent(Graphics g) {
+			g.drawImage(extract, 0, 0, extractSide, extractSide, null);
+			super.paintComponent(g);
+		}
+
+	}
 }
