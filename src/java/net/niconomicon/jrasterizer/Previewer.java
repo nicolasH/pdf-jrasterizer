@@ -17,15 +17,15 @@ import com.sun.media.jai.widget.DisplayJAI;
  */
 public class Previewer extends JPanel {
 
-	public int step_dpi = 66;
-	public int step_count = 5;
+	public int stepDpi = 66;
+	public int stepCount = 5;
 
-	public int extract_side = 200;
+	public int extractSide = 200;
 	public static final int LIMIT = 4000;
 
 	public Previewer() {
 		super();
-		this.setPreferredSize(new Dimension((extract_side + 2) * step_count, 420));
+		this.setPreferredSize(new Dimension((extractSide + 2) * stepCount, extractSide));
 	}
 
 	public void setPDFToPreview(PDFToImageRenderer renderer) {
@@ -36,22 +36,25 @@ public class Previewer extends JPanel {
 			this.getComponent(i).setVisible(false);
 		}
 		this.repaint();
-		this.setLayout(new GridLayout(0, step_count));
 		int maxPage = renderer.getPageCount();
+		this.setPreferredSize(new Dimension((extractSide + 2) * stepCount, extractSide * maxPage));
+		this.getParent().validate();
+		
+		this.setLayout(new GridLayout(0, stepCount));
 		for (int page = 1; page <= maxPage; page++) {
-			for (int step = 1; step <= step_count; step++) {
-				int res = step * step_dpi;
+			for (int step = 1; step <= stepCount; step++) {
+				int res = step * stepDpi;
 				System.out.println("Trying to get the extract at resolution : " + res);
 
 				Dimension d = renderer.getImageDimForResolution(1, res);
 				SinglePreview pre;
 				if (d.getHeight() >= LIMIT || d.getWidth() >= LIMIT) {
 					System.out.println(d);
-					pre = new SinglePreview(null, page, maxPage, res, extract_side, d.width, d.height);
+					pre = new SinglePreview(null, page, maxPage, res, extractSide, d.width, d.height);
 				} else {
-					BufferedImage img = renderer.getExtract(page, res, extract_side);
+					BufferedImage img = renderer.getExtract(page, res, extractSide);
 					System.out.println("icon infos : " + img.getHeight() + " by " + img.getWidth());
-					pre = new SinglePreview(img, page, maxPage, res, extract_side, d.width, d.height);
+					pre = new SinglePreview(img, page, maxPage, res, extractSide, d.width, d.height);
 				}
 				this.add(pre);
 				this.revalidate();

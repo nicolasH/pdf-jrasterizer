@@ -3,16 +3,22 @@
  */
 package net.niconomicon.jrasterizer;
 
+import java.awt.Component;
+import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -51,6 +57,7 @@ public class OpenPanel {
 		contentPane = new JPanel(new GridBagLayout());
 
 		from = new JTextField();
+		from.addFocusListener(new InputActionListener());
 		JButton choose = new JButton("Choose pdf to rasterize");
 		choose.addActionListener(new InputActionListener());
 		pdfFilter = new PDFFileFilter();
@@ -181,9 +188,34 @@ public class OpenPanel {
 		}
 	}
 
-	private class InputActionListener implements ActionListener {
+	private class InputActionListener implements ActionListener, FocusListener,MouseListener {
 
-		public void actionPerformed(ActionEvent arg0) {
+
+		public void mouseClicked(java.awt.event.MouseEvent e) {};
+		public void mouseEntered(java.awt.event.MouseEvent e) {};
+		public void mouseExited(java.awt.event.MouseEvent e) {};
+		public void mousePressed(java.awt.event.MouseEvent e) {};
+		public void mouseReleased(java.awt.event.MouseEvent e) {};
+		
+		public void focusGained(FocusEvent e) {
+			// if the focus is gained by clicking then act.
+			// if the focus is lost because some popup closed, don't act.
+			System.out.println("Something gained focus");
+			Component c = e.getOppositeComponent();
+			System.out.println("Class : " + c);
+			if (c == null) { return; }
+			while (c != null && !(c instanceof JFrame)) {
+				System.out.println("Class : " + c);
+				if (c instanceof Dialog) { return; }
+				c = c.getParent();
+			}
+			act();
+		}
+
+		public void focusLost(FocusEvent e) {}
+
+		public void act() {
+
 			String s = " some file";
 			int returnVal = sourceChooser.showOpenDialog(null);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -200,6 +232,10 @@ public class OpenPanel {
 					e.printStackTrace();
 				}
 			}
+		}
+
+		public void actionPerformed(ActionEvent arg0) {
+			act();
 		}
 	}
 

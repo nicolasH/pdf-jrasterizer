@@ -7,7 +7,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.image.BufferedImage;
@@ -15,8 +14,6 @@ import java.awt.image.BufferedImage;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
-
-import com.sun.media.jai.widget.DisplayJAI;
 
 /**
  * @author niko
@@ -97,8 +94,7 @@ public class SinglePreview extends JPanel {
 		labels.revalidate();
 
 		// Boundaries
-//		d.setBounds(1, 1, extractSide, extractSide);
-
+		
 		int lh = 60;
 		int ly = extractSide - lh;
 		labels.setBounds(1, ly + 1, extractSide, lh);
