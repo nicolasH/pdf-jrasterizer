@@ -188,15 +188,18 @@ public class OpenPanel {
 		}
 	}
 
-	private class InputActionListener implements ActionListener, FocusListener,MouseListener {
-
+	private class InputActionListener implements ActionListener, FocusListener, MouseListener {
 
 		public void mouseClicked(java.awt.event.MouseEvent e) {};
+
 		public void mouseEntered(java.awt.event.MouseEvent e) {};
+
 		public void mouseExited(java.awt.event.MouseEvent e) {};
+
 		public void mousePressed(java.awt.event.MouseEvent e) {};
+
 		public void mouseReleased(java.awt.event.MouseEvent e) {};
-		
+
 		public void focusGained(FocusEvent e) {
 			// if the focus is gained by clicking then act.
 			// if the focus is lost because some popup closed, don't act.

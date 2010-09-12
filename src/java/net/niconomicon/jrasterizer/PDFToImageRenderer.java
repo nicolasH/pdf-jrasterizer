@@ -64,6 +64,36 @@ public class PDFToImageRenderer {
 	}
 
 	/**
+	 * a thin wrapper over PDFPage.getUnstretchedSize()
+	 * @param pageNum
+	 * @param maxSideLength
+	 * @return the dimension of page, stretched so that the biggest side is equal to maxSideLength
+	 */
+	public Dimension getImageDimForSideLength(int pageNum, int maxSideLength) {
+		if (null == pdf) { return new Dimension(-1, -1); }
+		int numPages = pdf.getNumPages();
+
+		if (pageNum < 1) { throw new IllegalArgumentException("You want to get infos about the page #" + pageNum + " but the pdf starts at page #1"); }
+		if (pageNum > numPages) { throw new IllegalArgumentException("You want to get infos the page #" + pageNum + " but the pdf only has #" + numPages + " pages"); }
+
+		PDFPage page = pdf.getPage(pageNum);
+		// Getting the correct dimensions.
+		/////////////
+//		Rectangle2D r2d = page.getBBox();
+//
+//		double width = r2d.getWidth();
+//		double height = r2d.getHeight();
+//		double r = resolution / usedDefaultResolution;
+//		width *= r;
+//		height *= r;
+
+		/////////////
+		
+		Dimension pageSize = page.getUnstretchedSize((int) maxSideLength, (int) maxSideLength, null);
+		return pageSize;
+	}
+
+	/**
 	 * @throws IllegalArgumentException
 	 *             if the page you want is out of range. if the pdf has not been set correctly.
 	 * 
