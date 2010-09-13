@@ -65,6 +65,7 @@ public class PDFToImageRenderer {
 
 	/**
 	 * a thin wrapper over PDFPage.getUnstretchedSize()
+	 * 
 	 * @param pageNum
 	 * @param maxSideLength
 	 * @return the dimension of page, stretched so that the biggest side is equal to maxSideLength
@@ -78,18 +79,21 @@ public class PDFToImageRenderer {
 
 		PDFPage page = pdf.getPage(pageNum);
 		// Getting the correct dimensions.
-		/////////////
-//		Rectangle2D r2d = page.getBBox();
-//
-//		double width = r2d.getWidth();
-//		double height = r2d.getHeight();
-//		double r = resolution / usedDefaultResolution;
-//		width *= r;
-//		height *= r;
+		// ///////////
+		Rectangle2D r2d = page.getBBox();
+		//
+		double width = r2d.getWidth();
+		double height = r2d.getHeight();
+		double fW = maxSideLength / width;
+		double fH = maxSideLength / height;
 
-		/////////////
-		
-		Dimension pageSize = page.getUnstretchedSize((int) maxSideLength, (int) maxSideLength, null);
+		double f = Math.min(fW, fH);
+		width *= f;
+		height *= f;
+
+		// ///////////
+
+		Dimension pageSize = page.getUnstretchedSize((int) width, (int) height, null);
 		return pageSize;
 	}
 
