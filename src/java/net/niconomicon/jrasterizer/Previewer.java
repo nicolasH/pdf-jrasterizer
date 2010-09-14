@@ -28,7 +28,7 @@ public class Previewer extends JPanel {
 		this.setPreferredSize(new Dimension((extractSide + 2) * stepCount, extractSide));
 	}
 
-	public void setPDFToPreview(PDFToImageRenderer renderer) {
+	public void setPDFToPreview(PDFToImageRendererDPI renderer) {
 		this.removeAll();
 		this.revalidate();
 		int n = this.getComponentCount();

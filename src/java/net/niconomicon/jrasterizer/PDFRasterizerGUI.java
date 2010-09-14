@@ -81,7 +81,7 @@ public class PDFRasterizerGUI {
 
 	}
 
-	public void showExtracts(PDFToImageRenderer ren) {
+	public void showExtracts(PDFToImageRendererDPI ren) {
 		contentPane.remove(jaiSP);
 		jaiSP.setVisible(false);
 		previewSP.setVisible(true);

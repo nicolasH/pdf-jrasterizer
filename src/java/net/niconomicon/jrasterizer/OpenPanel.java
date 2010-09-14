@@ -33,7 +33,7 @@ import javax.swing.event.ChangeListener;
  * 
  */
 public class OpenPanel {
-	PDFToImageRenderer ren;
+	PDFToImageRendererDPI ren;
 	JPanel contentPane;
 
 	JFileChooser sourceChooser;
@@ -53,7 +53,7 @@ public class OpenPanel {
 	}
 
 	private void init() {
-		ren = new PDFToImageRenderer();
+		ren = new PDFToImageRendererDPI();
 		contentPane = new JPanel(new GridBagLayout());
 
 		from = new JTextField();
