@@ -135,9 +135,10 @@ public class PDFToImageRendererDPI {
 		// BufferedImage image = (BufferedImage) page.getImage(pageSize.width, pageSize.height, null, null, true, true);
 		BufferedImage image = (BufferedImage) pdf.getPage(pageNum).getImage(pageSize.width, pageSize.height, null, null, true, true);
 		System.out.println("image " + image.getWidth() + " + " + image.getHeight());
-		return image.getSubimage(cX, cY, cW, cH);
-		// return (BufferedImage) image;
-
+		BufferedImage ret = image.getSubimage(cX, cY, cW, cH);
+		//supposedly releasing 'image'
+		image = null;
+		return ret;
 	}
 
 	/**

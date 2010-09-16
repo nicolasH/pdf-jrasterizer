@@ -107,13 +107,14 @@ public class PDFToImageRendererPixels {
 		int cH = (int) Math.min(pageSize.height, clipSize);
 
 		Rectangle clip = new Rectangle(cX, cY, cW, cH);
-		System.out.println("Clip : " + clip);
+		// System.out.println("Clip : " + clip);
 		// get the new image, waiting until the pdf has been fully rendered.
 		// BufferedImage image = (BufferedImage) page.getImage(pageSize.width, pageSize.height, null, null, true, true);
 		BufferedImage image = (BufferedImage) pdf.getPage(pageNum).getImage(pageSize.width, pageSize.height, null, null, true, true);
-		System.out.println("image " + image.getWidth() + " + " + image.getHeight());
-		return image.getSubimage(cX, cY, cW, cH);
-		// return (BufferedImage) image;
+		BufferedImage ret = image.getSubimage(cX, cY, cW, cH);
+		// supposedly releasing 'image'
+		image = null;
+		return ret;
 
 	}
 
