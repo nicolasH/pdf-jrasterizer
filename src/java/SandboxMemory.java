@@ -31,7 +31,7 @@ public class SandboxMemory {
 			System.out.println("Page : " + i + " dimensions : " + d.width + " x " + d.height + " = " + (d.width * d.height) / (1000 * 1000) + " megapixels");
 			d = null;
 		}
-		for (int n = 0; n < 50; n++) {
+		for (int n = 1; n < 50; n++) {
 			for (int i = 1; i <= pages; i++) {
 				BufferedImage img = ren.getExtract(i, side, 200);
 				img=null;
