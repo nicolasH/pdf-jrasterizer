@@ -21,22 +21,18 @@ public class SandboxMemory {
 		// TODO Auto-generated method stub
 		File pdf = new File(args[0]);
 		System.out.println("Selected pdf on which to run the test : " + args[0]);
-		PDFToImageRendererPixels ren = new PDFToImageRendererPixels();
-		ren.setPDFFromFile(pdf);
-		int pages = ren.getPageCount();
 		int side = 1700;
 		System.out.println("Page sizes for max size = " + side);
-		for (int i = 1; i <= pages; i++) {
-			Dimension d = ren.getImageDimForSideLength(i, side);
-			System.out.println("Page : " + i + " dimensions : " + d.width + " x " + d.height + " = " + (d.width * d.height) / (1000 * 1000) + " megapixels");
-			d = null;
-		}
 		for (int n = 1; n < 50; n++) {
+			PDFToImageRendererPixels ren = new PDFToImageRendererPixels();
+			ren.setPDFFromFile(pdf);
+			int pages = ren.getPageCount();
 			for (int i = 1; i <= pages; i++) {
 				BufferedImage img = ren.getExtract(i, side, 200);
 				img=null;
 				System.gc();
 			}
+			ren = null;
 			Thread.sleep(1000);
 			System.gc();
 			Thread.sleep(1000);
