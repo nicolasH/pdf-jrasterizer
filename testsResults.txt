@@ -1,0 +1,19 @@
+xmx = xms = 256M 
+Dimension : 2250 * 1688 MP : 3.798
+After iteration : 1 Memory infos : Xmx : 252 MB - used : 104 MB free: 148 MB - reserved: 252 MB - total unused: 148 MB
+Dimension : 2300 * 1725 MP : 3.9675
+Out of memory Error 
+xmx = xms = 512M 
+Dimension : 3000 * 2250 MP : 6.75
+After iteration : 1 Memory infos : Xmx : 507 MB - used : 106 MB free: 401 MB - reserved: 507 MB - total unused: 401 MB
+Dimension : 3500 * 2625 MP : 9.1875
+Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
+Dimension : 4000 * 3000 MP : 12.0
+Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
+
+Page sizes for max size = 12000
+Dimension : 12000 * 9000 MP : 108.0
+page : 1 Before reset : Memory infos : Xmx : 507 MB - used : 422 MB free: 85 MB - reserved: 507 MB - total unused: 85 MB
+page : 1 After reset  : Memory infos : Xmx : 507 MB - used : 1 MB free: 506 MB - reserved: 507 MB - total unused: 506 MB
+page : 2 Before reset : Memory infos : Xmx : 507 MB - used : 414 MB free: 93 MB - reserved: 507 MB - total unused: 93 MB
+page : 2 After reset  : Memory infos : Xmx : 507 MB - used : 1 MB free: 506 MB - reserved: 507 MB - total unused: 506 MB
