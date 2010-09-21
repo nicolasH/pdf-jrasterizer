@@ -23,7 +23,7 @@ import com.sun.pdfview.PDFPage;
  * @author Nicolas Hoibian copyright August 2010
  * 
  */
-public class PDFToImageRendererDPI {
+public class PDFToImageRendererDPI extends PDFToImageRenderer {
 
 	public static final double PDF_ASSUMED_RESOLUTION = 72.0;
 
@@ -34,11 +34,23 @@ public class PDFToImageRendererDPI {
 	/**
 	 * Create a
 	 */
-	public PDFToImageRendererDPI() {
+	public PDFToImageRendererDPI(String fileName) throws IOException {
+		super(fileName);
 		usedDefaultResolution = PDF_ASSUMED_RESOLUTION;
 	}
 
-	public PDFToImageRendererDPI(double pdfResolution) {
+	public PDFToImageRendererDPI(String fileName, double pdfResolution) throws IOException {
+		super(fileName);
+		usedDefaultResolution = pdfResolution;
+	}
+
+	public PDFToImageRendererDPI(File file) throws IOException {
+		super(file);
+		usedDefaultResolution = PDF_ASSUMED_RESOLUTION;
+	}
+
+	public PDFToImageRendererDPI(File file, double pdfResolution) throws IOException {
+		super(file);
 		usedDefaultResolution = pdfResolution;
 	}
 
@@ -136,55 +148,9 @@ public class PDFToImageRendererDPI {
 		BufferedImage image = (BufferedImage) pdf.getPage(pageNum).getImage(pageSize.width, pageSize.height, null, null, true, true);
 		System.out.println("image " + image.getWidth() + " + " + image.getHeight());
 		BufferedImage ret = image.getSubimage(cX, cY, cW, cH);
-		//supposedly releasing 'image'
+		// supposedly releasing 'image'
 		image = null;
 		return ret;
-	}
-
-	/**
-	 * 
-	 * @return the number of pages in the pdf, 0 if the pdf has not been set.
-	 */
-	public int getPageCount() {
-		if (null == pdf) { return 0; }
-		return pdf.getNumPages();
-	}
-
-	/**
-	 * Set the pdf file on which the rendering is going to be performed.
-	 * 
-	 * @param pdfFile
-	 */
-	public void setPDF(PDFFile pdfFile) {
-		this.pdf = pdfFile;
-	}
-
-	/**
-	 * Load the PDF at the given location and set it @see {@link #setPDF(PDFFile)}.
-	 * 
-	 * @param pdfLocation
-	 *            the path to the PDF file.
-	 * @throws IOException
-	 *             if there is a problem opening the PDF.
-	 */
-	public void setPDFFromFile(File pdfLocation) throws IOException {
-		PDFFile pdfFile = getPDFFile(pdfLocation);
-		setPDF(pdfFile);
-	}
-
-	/**
-	 * Loads the PDFFile from the given location.
-	 * 
-	 * @param filePath
-	 *            location of the PDF file.
-	 * @return The PDFFile representation of the file at the given location (if any).
-	 * @throws IOException
-	 */
-	public static PDFFile getPDFFile(File filePath) throws IOException {
-		RandomAccessFile raf = new RandomAccessFile(filePath, "r");
-		FileChannel fc = raf.getChannel();
-		ByteBuffer buf = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
-		return new PDFFile(buf);
 	}
 
 	/**

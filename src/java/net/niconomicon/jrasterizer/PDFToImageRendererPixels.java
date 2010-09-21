@@ -20,12 +20,20 @@ import com.sun.pdfview.PDFPage;
  */
 
 /**
- * @author Nicolas Hoibian copyright August 2010
+ * @author Nicolas Hoibian copyright September 2010
  * 
  */
-public class PDFToImageRendererPixels {
+public class PDFToImageRendererPixels extends PDFToImageRenderer {
 
 	PDFFile pdf = null;
+
+	public PDFToImageRendererPixels(String fileName) throws IOException {
+		super(fileName);
+	}
+
+	public PDFToImageRendererPixels(File file) throws IOException {
+		super(file);
+	}
 
 	/**
 	 * a thin wrapper over PDFPage.getUnstretchedSize()
@@ -116,52 +124,6 @@ public class PDFToImageRendererPixels {
 		image = null;
 		return ret;
 
-	}
-
-	/**
-	 * 
-	 * @return the number of pages in the pdf, 0 if the pdf has not been set.
-	 */
-	public int getPageCount() {
-		if (null == pdf) { return 0; }
-		return pdf.getNumPages();
-	}
-
-	/**
-	 * Set the pdf file on which the rendering is going to be performed.
-	 * 
-	 * @param pdfFile
-	 */
-	public void setPDF(PDFFile pdfFile) {
-		this.pdf = pdfFile;
-	}
-
-	/**
-	 * Load the PDF at the given location and set it @see {@link #setPDF(PDFFile)}.
-	 * 
-	 * @param pdfLocation
-	 *            the path to the PDF file.
-	 * @throws IOException
-	 *             if there is a problem opening the PDF.
-	 */
-	public void setPDFFromFile(File pdfLocation) throws IOException {
-		PDFFile pdfFile = getPDFFile(pdfLocation);
-		setPDF(pdfFile);
-	}
-
-	/**
-	 * Loads the PDFFile from the given location.
-	 * 
-	 * @param filePath
-	 *            location of the PDF file.
-	 * @return The PDFFile representation of the file at the given location (if any).
-	 * @throws IOException
-	 */
-	public static PDFFile getPDFFile(File filePath) throws IOException {
-		RandomAccessFile raf = new RandomAccessFile(filePath, "r");
-		FileChannel fc = raf.getChannel();
-		ByteBuffer buf = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
-		return new PDFFile(buf);
 	}
 
 	/**

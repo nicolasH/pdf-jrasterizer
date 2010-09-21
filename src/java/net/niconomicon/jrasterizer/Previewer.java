@@ -21,7 +21,7 @@ public class Previewer extends JPanel {
 	public int stepCount = 5;
 
 	public int extractSide = 200;
-	public static final int LIMIT = 4000;
+	public static final int LIMIT = 10000;
 
 	public Previewer() {
 		super();
@@ -39,7 +39,6 @@ public class Previewer extends JPanel {
 		int maxPage = renderer.getPageCount();
 		this.setPreferredSize(new Dimension((extractSide + 2) * stepCount, extractSide * maxPage));
 		this.getParent().validate();
-		
 		this.setLayout(new GridLayout(0, stepCount));
 		for (int page = 1; page <= maxPage; page++) {
 			for (int step = 1; step <= stepCount; step++) {

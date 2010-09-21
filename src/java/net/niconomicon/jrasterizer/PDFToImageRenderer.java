@@ -12,7 +12,7 @@ import java.nio.channels.FileChannel;
 import com.sun.pdfview.PDFFile;
 
 /**
- * @author Nicolas Hoibian
+ * @author Nicolas Hoibian copyright September 2010
  * 
  */
 public abstract class PDFToImageRenderer {

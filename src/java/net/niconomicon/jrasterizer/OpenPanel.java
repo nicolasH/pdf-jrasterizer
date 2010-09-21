@@ -53,7 +53,7 @@ public class OpenPanel {
 	}
 
 	private void init() {
-		ren = new PDFToImageRendererDPI();
+//		ren = new PDFToImageRendererDPI();
 		contentPane = new JPanel(new GridBagLayout());
 
 		from = new JTextField();
@@ -131,7 +131,7 @@ public class OpenPanel {
 
 		public void run() {
 			try {
-				ren.setPDFFromFile(pdfFile);
+				ren = new PDFToImageRendererDPI(pdfFile);
 				gui.setPDFFile(pdfFile);
 				SwingUtilities.invokeLater(new UpdateResolutionLabel());
 			} catch (Exception ex) {

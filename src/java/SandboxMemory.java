@@ -27,16 +27,14 @@ public class SandboxMemory {
 		int pages = 0;
 		for (int n = 1; n < 10; n++) {
 			if (n == 1) {
-				ren = new PDFToImageRendererPixels();
-				ren.setPDFFromFile(pdf);
+				ren = new PDFToImageRendererPixels(pdf);
 				pages = ren.getPageCount();
 				Dimension d = ren.getImageDimForSideLength(1, side);
 				System.out.println("Dimension : " + d.width + " * " + d.height + " MP : " + ((double) (d.width * d.height)) / (1000.0 * 1000.0));
 			}
 			ren = null;
 			for (int i = 1; i <= pages; i++) {
-				ren = new PDFToImageRendererPixels();
-				ren.setPDFFromFile(pdf);
+				ren = new PDFToImageRendererPixels(pdf);
 				BufferedImage img = ren.getExtract(i, side, 200);
 				img = null;
 				System.out.print("page : " + i + " Before reset : Memory infos : ");
