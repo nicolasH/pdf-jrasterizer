@@ -38,6 +38,14 @@ public abstract class PDFToImageRenderer {
 	}
 
 	/**
+	 * 
+	 * @return the location of the PDF file that is the base of this instance.
+	 */
+	public String getFileLocation() {
+		return pdfFileName;
+	}
+
+	/**
 	 * Load the PDF at the given location and set it @see {@link #setPDF(PDFFile)}.
 	 * 
 	 * @param pdfLocation
@@ -77,4 +85,14 @@ public abstract class PDFToImageRenderer {
 		ByteBuffer buf = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
 		return new PDFFile(buf);
 	}
+
+	/**
+	 * 
+	 * @return the number of pages in the pdf, 0 if the pdf has not been set.
+	 */
+	public int getPageCount() {
+		if (null == pdf) { return 0; }
+		return pdf.getNumPages();
+	}
+
 }
