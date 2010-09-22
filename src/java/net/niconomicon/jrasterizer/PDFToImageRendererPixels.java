@@ -1,16 +1,16 @@
 package net.niconomicon.jrasterizer;
 
 import java.awt.Dimension;
-import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
+import java.awt.image.Raster;
+import java.awt.image.RenderedImage;
+import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 
 import com.sun.pdfview.PDFFile;
 import com.sun.pdfview.PDFPage;
@@ -24,8 +24,6 @@ import com.sun.pdfview.PDFPage;
  * 
  */
 public class PDFToImageRendererPixels extends PDFToImageRenderer {
-
-	PDFFile pdf = null;
 
 	public PDFToImageRendererPixels(String fileName) throws IOException {
 		super(fileName);
@@ -76,7 +74,6 @@ public class PDFToImageRendererPixels extends PDFToImageRenderer {
 		if (pageNum > numPages) { throw new IllegalArgumentException("You want to render the page #" + pageNum + " but the pdf only has #" + numPages + " pages"); }
 
 		PDFPage page = pdf.getPage(pageNum);
-
 		// Getting the correct dimensions.
 		Dimension pageSize = page.getUnstretchedSize((int) biggestSide, (int) biggestSide, null);
 
@@ -119,11 +116,31 @@ public class PDFToImageRendererPixels extends PDFToImageRenderer {
 		// get the new image, waiting until the pdf has been fully rendered.
 		// BufferedImage image = (BufferedImage) page.getImage(pageSize.width, pageSize.height, null, null, true, true);
 		BufferedImage image = (BufferedImage) pdf.getPage(pageNum).getImage(pageSize.width, pageSize.height, null, null, true, true);
-		BufferedImage ret = image.getSubimage(cX, cY, cW, cH);
+		Raster ras = image.getData(clip);
+		BufferedImage ret = new BufferedImage(clip.width,clip.height,image.getType());
+		
+		ret.getRaster().setRect(-clip.x, -clip.y, ras);
+		//		copySrcIntoDstAt(image, ret, clip.x,clip.y);
+//		BufferedImage ret = image.getSubimage(cX, cY, cW, cH);
 		// supposedly releasing 'image'
+		ras = null;
 		image = null;
 		return ret;
 
+	}
+/* from :
+	http://stackoverflow.com/questions/2825837/java-how-to-do-fast-copy-of-a-bufferedimages-pixels-unit-test-included
+	*/
+	private static void copySrcIntoDstAt(final BufferedImage src, final BufferedImage dst, final int dx, final int dy) {
+		int[] srcbuf = ((DataBufferInt) src.getRaster().getDataBuffer()).getData();
+		int[] dstbuf = ((DataBufferInt) dst.getRaster().getDataBuffer()).getData();
+		int width = src.getWidth();
+		int height = src.getHeight();
+		int dstoffs = dx + dy * dst.getWidth();
+		int srcoffs = 0;
+		for (int y = 0; y < height; y++, dstoffs += dst.getWidth(), srcoffs += width) {
+			System.arraycopy(srcbuf, srcoffs, dstbuf, dstoffs, width);
+		}
 	}
 
 	/**

@@ -1,11 +1,10 @@
 /**
  * 
  */
-package net.niconomicon.jrasterizer;
+package net.niconomicon.jrasterizer.gui;
 
 import java.awt.Component;
 import java.awt.Dialog;
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -13,27 +12,22 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseListener;
-import java.awt.image.BufferedImage;
 import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSpinner;
 import javax.swing.JTextField;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingUtilities;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+
+import net.niconomicon.jrasterizer.PDFFileFilter;
 
 /**
  * @author Nicolas Hoibian copyright August 2010
  * 
  */
 public class OpenPanel {
-	PDFToImageRendererDPI ren;
+
 	JPanel contentPane;
 
 	JFileChooser sourceChooser;
@@ -41,11 +35,10 @@ public class OpenPanel {
 	PDFFileFilter pdfFilter;
 	JTextField from;
 
-	JSpinner resolutionSpinner;
-	JLabel resolutionLabel;
-
 	Thread imageRendererThread;
 	PDFRasterizerGUI gui;
+
+	String pdfFileLocation;
 
 	public OpenPanel(PDFRasterizerGUI gui) {
 		this.gui = gui;
@@ -53,7 +46,7 @@ public class OpenPanel {
 	}
 
 	private void init() {
-//		ren = new PDFToImageRendererDPI();
+		// ren = new PDFToImageRendererDPI();
 		contentPane = new JPanel(new GridBagLayout());
 
 		from = new JTextField();
@@ -70,17 +63,8 @@ public class OpenPanel {
 		sourceChooser.setCurrentDirectory(new File(System.getProperty(PDFRasterizerGUI.USER_HOME)));
 		// later : choose destination, type, resolution. Later
 
-		SpinnerNumberModel m = new SpinnerNumberModel(100, 50, 600, 50);
-		m.addChangeListener(new UpdateResolutionAction());
-
-		resolutionSpinner = new JSpinner(m);
-
-		resolutionLabel = new JLabel(" resulting size : ");
-
-		JLabel res = new JLabel("Resolution (dpi) : ");
-
-		JButton preview = new JButton("Preview");
-		preview.addActionListener(new ShowPDFResolutionsPreviewListener());
+//		JButton preview = new JButton("Preview");
+//		preview.addActionListener(new ShowPDFResolutionsPreviewListener());
 
 		JButton view = new JButton("show");
 		view.addActionListener(new ShowPDFImageListener());
@@ -89,33 +73,21 @@ public class OpenPanel {
 		// layout
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridy = 0;
-
 		contentPane.add(choose, c);
 
 		c = new GridBagConstraints();
 		c.gridy = 0;
 		c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridwidth = GridBagConstraints.REMAINDER;
-		c.anchor = GridBagConstraints.LINE_END;
+		c.weightx = 1.0;
+		// c.anchor = GridBagConstraints.LINE_END;
 		contentPane.add(from, c);
 
-		c = new GridBagConstraints();
-		c.gridy = 1;
-		contentPane.add(res, c);
+//		c = new GridBagConstraints();
+//		c.gridy = 0;
+//		contentPane.add(preview, c);
 
 		c = new GridBagConstraints();
-		contentPane.add(resolutionSpinner, c);
-
-		c = new GridBagConstraints();
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.weightx = 1.0;
-		contentPane.add(resolutionLabel, c);
-
-		c = new GridBagConstraints();
-		c.anchor = GridBagConstraints.LINE_END;
-		contentPane.add(preview, c);
-
-		c = new GridBagConstraints();
+		c.gridy = 0;
 		c.anchor = GridBagConstraints.LINE_END;
 		contentPane.add(view, c);
 
@@ -131,57 +103,39 @@ public class OpenPanel {
 
 		public void run() {
 			try {
-				ren = new PDFToImageRendererDPI(pdfFile);
+				pdfFileLocation = pdfFile.getAbsolutePath();
 				gui.setPDFFile(pdfFile);
-				SwingUtilities.invokeLater(new UpdateResolutionLabel());
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 		}
 	}
 
-	private class UpdateResolutionAction implements ChangeListener {
-
-		public void stateChanged(ChangeEvent e) {
-			SwingUtilities.invokeLater(new UpdateResolutionLabel());
-		}
-	}
-
-	private class UpdateResolutionLabel implements Runnable {
-		public void run() {
-			int rez = ((SpinnerNumberModel) resolutionSpinner.getModel()).getNumber().intValue();
-			Dimension d = ren.getImageDimForResolution(1, rez);
-			resolutionLabel.setText(" image size of page 1 @ " + rez + " dpi : " + d.width + " * " + d.height + " pixels");
-		}
-
-	}
-
-	private class RenderAction implements Runnable {
-		BufferedImage img;
-
-		public void run() {
-			try {
-				int rez = ((SpinnerNumberModel) resolutionSpinner.getModel()).getNumber().intValue();
-
-				BufferedImage image = ren.getImageFromPDF(1, rez);
-				img = image;
-				// Runnable r = new Runnable() {
-				// public void run() {
-				gui.setImage(img);
-				// };
-				// };
-				// SwingUtilities.invokeLater(r);
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}
-	}
+	// private class RenderAction implements Runnable {
+	// BufferedImage img;
+	//
+	// public void run() {
+	// try {
+	// int rez = ((SpinnerNumberModel) resolutionSpinner.getModel()).getNumber().intValue();
+	// BufferedImage image = ren.getImageFromPDF(1, rez);
+	// img = image;
+	// // Runnable r = new Runnable() {
+	// // public void run() {
+	// gui.setImage(img);
+	// // };
+	// // };
+	// // SwingUtilities.invokeLater(r);
+	// } catch (Exception ex) {
+	// ex.printStackTrace();
+	// }
+	// }
+	// }
 
 	private class ExtractAction implements Runnable {
 
 		public void run() {
 			try {
-				gui.showExtracts(ren);
+				gui.showExtracts(pdfFileLocation);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
@@ -230,6 +184,9 @@ public class OpenPanel {
 					from.setText(sourcePath.getCanonicalPath());
 					Thread t = new Thread(new SetPDFAction(sourcePath));
 					t.start();
+					Thread.sleep(500);
+					t = new Thread(new ExtractAction());
+					t.start();
 				} catch (Exception e) {
 					from.setText("cannot Open File");
 					e.printStackTrace();
@@ -245,8 +202,8 @@ public class OpenPanel {
 	private class ShowPDFImageListener implements ActionListener {
 
 		public void actionPerformed(ActionEvent e) {
-			imageRendererThread = new Thread(new RenderAction());
-			imageRendererThread.start();
+			// imageRendererThread = new Thread(new RenderAction());
+			// imageRendererThread.start();
 		}
 	}
 

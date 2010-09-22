@@ -1,7 +1,7 @@
 /**
  * 
  */
-package net.niconomicon.jrasterizer;
+package net.niconomicon.jrasterizer.gui;
 
 import java.awt.FileDialog;
 import java.awt.GridBagConstraints;

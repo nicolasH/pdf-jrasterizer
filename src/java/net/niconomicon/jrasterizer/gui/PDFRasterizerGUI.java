@@ -1,4 +1,4 @@
-package net.niconomicon.jrasterizer;
+package net.niconomicon.jrasterizer.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -9,6 +9,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+
+import net.niconomicon.jrasterizer.PDFToImageRendererDPI;
 
 import com.sun.media.jai.widget.DisplayJAI;
 
@@ -56,7 +58,7 @@ public class PDFRasterizerGUI {
 		p.add(savePanel.contentPane);
 		contentPane.add(p, BorderLayout.NORTH);
 		contentPane.add(previewSP, BorderLayout.CENTER);
-		contentPane.setPreferredSize(new Dimension(700, 600));
+		contentPane.setPreferredSize(new Dimension(816, 600));
 		frame.setContentPane(contentPane);
 
 		frame.pack();
@@ -81,12 +83,16 @@ public class PDFRasterizerGUI {
 
 	}
 
-	public void showExtracts(PDFToImageRendererDPI ren) {
+	public void showExtracts(String f) {
 		contentPane.remove(jaiSP);
 		jaiSP.setVisible(false);
 		previewSP.setVisible(true);
 		contentPane.add(previewSP, BorderLayout.CENTER);
-		previewer.setPDFToPreview(ren);
+		try {
+			previewer.setPDFToPreview(f);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 		previewSP.revalidate();
 		contentPane.revalidate();
 		previewSP.repaint();

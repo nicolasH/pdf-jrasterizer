@@ -1,7 +1,7 @@
 /**
  * 
  */
-package net.niconomicon.jrasterizer;
+package net.niconomicon.jrasterizer.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -23,15 +23,15 @@ public class SinglePreview extends JPanel {
 	BufferedImage extract;
 	final int imgWidth;
 	final int imgHeight;
-	final int resolution;
+//	final int resolution;
 	final int page;
 	final int maxPage;
 	final int extractSide;
 
-	public SinglePreview(BufferedImage img, int page, int pages, int resolution, int extractSide, int width, int height) {
+	public SinglePreview(BufferedImage img, int page, int pages, int extractSide, int width, int height) {
 		super(new BorderLayout());
 		this.extract = img;
-		this.resolution = resolution;
+//		this.resolution = resolution;
 		this.page = page;
 		this.maxPage = pages;
 		this.extractSide = extractSide;
@@ -54,12 +54,12 @@ public class SinglePreview extends JPanel {
 		c.anchor = GridBagConstraints.NORTHWEST;
 		labels.add(l, c);
 
-		l = new JLabel("Resolution");
-		c = new GridBagConstraints();
-		c.gridy = 1;
-		c.gridx = 0;
-		c.anchor = GridBagConstraints.NORTHWEST;
-		labels.add(l, c);
+//		l = new JLabel("Resolution");
+//		c = new GridBagConstraints();
+//		c.gridy = 1;
+//		c.gridx = 0;
+//		c.anchor = GridBagConstraints.NORTHWEST;
+//		labels.add(l, c);
 
 		l = new JLabel("Dimensions");
 		c = new GridBagConstraints();
@@ -75,12 +75,12 @@ public class SinglePreview extends JPanel {
 		c.anchor = GridBagConstraints.NORTHWEST;
 		labels.add(l, c);
 
-		l = new JLabel(": ~ " + resolution + " dpi");
-		c = new GridBagConstraints();
-		c.gridy = 1;
-		c.gridx = 1;
-		c.anchor = GridBagConstraints.NORTHWEST;
-		labels.add(l, c);
+//		l = new JLabel(": ~ " + resolution + " dpi");
+//		c = new GridBagConstraints();
+//		c.gridy = 1;
+//		c.gridx = 1;
+//		c.anchor = GridBagConstraints.NORTHWEST;
+//		labels.add(l, c);
 
 		l = new JLabel(": " + imgWidth + "x" + imgHeight + " px");
 		c = new GridBagConstraints();
