@@ -36,6 +36,7 @@ public class PDFRasterizerGUI {
 
 	JScrollPane previewSP;
 	JScrollPane jaiSP;
+	File currentFile;
 
 	public PDFRasterizerGUI() {
 
@@ -50,7 +51,7 @@ public class PDFRasterizerGUI {
 		jaiPanel = new DisplayJAI();
 		jaiSP = new JScrollPane(jaiPanel);
 
-		previewer = new Previewer();
+		previewer = new Previewer(this);
 		previewSP = new JScrollPane(previewer);
 
 		JTabbedPane p = new JTabbedPane();
@@ -67,10 +68,16 @@ public class PDFRasterizerGUI {
 	}
 
 	public void setPDFFile(File f) {
+		currentFile = f;
 		savePanel.setCurrentFile(f);
 	}
 
+	public File getCurrentFile() {
+		return currentFile;
+	}
+
 	public void setImage(BufferedImage image) {
+
 		this.img = image;
 
 		jaiPanel.set(this.img);
@@ -83,15 +90,17 @@ public class PDFRasterizerGUI {
 
 	}
 
-	public void showExtracts(String f) {
+	public void showExtracts(File f) {
 		contentPane.remove(jaiSP);
 		jaiSP.setVisible(false);
 		previewSP.setVisible(true);
 		contentPane.add(previewSP, BorderLayout.CENTER);
-		try {
-			previewer.setPDFToPreview(f);
-		} catch (Exception ex) {
-			ex.printStackTrace();
+		if (previewer.getPDFToPreview() == null || previewer.getPDFToPreview().compareTo(currentFile.getAbsolutePath()) != 0) {
+			try {
+				previewer.setPDFToPreview(f);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
 		}
 		previewSP.revalidate();
 		contentPane.revalidate();

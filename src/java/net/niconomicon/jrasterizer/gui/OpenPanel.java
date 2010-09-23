@@ -38,7 +38,7 @@ public class OpenPanel {
 	Thread imageRendererThread;
 	PDFRasterizerGUI gui;
 
-	String pdfFileLocation;
+	File pdfFile;
 
 	public OpenPanel(PDFRasterizerGUI gui) {
 		this.gui = gui;
@@ -63,11 +63,11 @@ public class OpenPanel {
 		sourceChooser.setCurrentDirectory(new File(System.getProperty(PDFRasterizerGUI.USER_HOME)));
 		// later : choose destination, type, resolution. Later
 
-//		JButton preview = new JButton("Preview");
-//		preview.addActionListener(new ShowPDFResolutionsPreviewListener());
+		JButton preview = new JButton("Back to previews");
+		preview.addActionListener(new ShowPDFResolutionsPreviewListener());
 
-		JButton view = new JButton("show");
-		view.addActionListener(new ShowPDFImageListener());
+		// JButton view = new JButton("show");
+		// view.addActionListener(new ShowPDFImageListener());
 
 		// //////////////
 		// layout
@@ -82,28 +82,23 @@ public class OpenPanel {
 		// c.anchor = GridBagConstraints.LINE_END;
 		contentPane.add(from, c);
 
-//		c = new GridBagConstraints();
-//		c.gridy = 0;
-//		contentPane.add(preview, c);
-
 		c = new GridBagConstraints();
 		c.gridy = 0;
 		c.anchor = GridBagConstraints.LINE_END;
-		contentPane.add(view, c);
+		contentPane.add(preview, c);
+
+		// c = new GridBagConstraints();
+		// c.gridy = 0;
+		// c.anchor = GridBagConstraints.LINE_END;
+		// contentPane.add(view, c);
 
 		contentPane.setName("OpenPDF");
 	}
 
 	private class SetPDFAction implements Runnable {
-		public File pdfFile;
-
-		public SetPDFAction(File pdfFile) {
-			this.pdfFile = pdfFile;
-		}
 
 		public void run() {
 			try {
-				pdfFileLocation = pdfFile.getAbsolutePath();
 				gui.setPDFFile(pdfFile);
 			} catch (Exception ex) {
 				ex.printStackTrace();
@@ -111,31 +106,11 @@ public class OpenPanel {
 		}
 	}
 
-	// private class RenderAction implements Runnable {
-	// BufferedImage img;
-	//
-	// public void run() {
-	// try {
-	// int rez = ((SpinnerNumberModel) resolutionSpinner.getModel()).getNumber().intValue();
-	// BufferedImage image = ren.getImageFromPDF(1, rez);
-	// img = image;
-	// // Runnable r = new Runnable() {
-	// // public void run() {
-	// gui.setImage(img);
-	// // };
-	// // };
-	// // SwingUtilities.invokeLater(r);
-	// } catch (Exception ex) {
-	// ex.printStackTrace();
-	// }
-	// }
-	// }
-
 	private class ExtractAction implements Runnable {
 
 		public void run() {
 			try {
-				gui.showExtracts(pdfFileLocation);
+				gui.showExtracts(pdfFile);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
@@ -180,9 +155,9 @@ public class OpenPanel {
 				s = sourceChooser.getSelectedFile().getName();
 
 				try {
-					File sourcePath = sourceChooser.getSelectedFile();
-					from.setText(sourcePath.getCanonicalPath());
-					Thread t = new Thread(new SetPDFAction(sourcePath));
+					pdfFile = sourceChooser.getSelectedFile();
+					from.setText(pdfFile.getCanonicalPath());
+					Thread t = new Thread(new SetPDFAction());
 					t.start();
 					Thread.sleep(500);
 					t = new Thread(new ExtractAction());

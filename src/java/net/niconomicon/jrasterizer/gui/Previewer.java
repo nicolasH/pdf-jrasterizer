@@ -6,7 +6,7 @@ package net.niconomicon.jrasterizer.gui;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
+import java.io.File;
 import java.io.IOException;
 
 import javax.swing.JPanel;
@@ -24,8 +24,12 @@ public class Previewer extends JPanel {
 	public static final int LIMIT = 10000;
 	public static final int[] sizes = new int[] { 1000, 3000, 6000, 9000 };
 
-	public Previewer() {
+	PDFRasterizerGUI gui;
+	String pdfFile;
+
+	public Previewer(PDFRasterizerGUI gui) {
 		super();
+		this.gui = gui;
 		setPrefSize(2);
 	}
 
@@ -34,9 +38,14 @@ public class Previewer extends JPanel {
 
 	}
 
-	public void setPDFToPreview(String pdffile) throws IOException {
+	public String getPDFToPreview() {
+		return pdfFile;
+	}
+
+	public void setPDFToPreview(File pdffile) throws IOException {
 		this.removeAll();
 		this.revalidate();
+		pdfFile = pdffile.getAbsolutePath();
 		int n = this.getComponentCount();
 		for (int i = 0; i < n; i++) {
 			this.getComponent(i).setVisible(false);
@@ -57,25 +66,27 @@ public class Previewer extends JPanel {
 				// System.out.print("Page " + page + " - Trying to get the extract for dim : " + d + " ...");
 				SinglePreview pre;
 				BufferedImage img = renderer.getExtract(page, side, extractSide);
-				pre = new SinglePreview(img, page, maxPage, extractSide, d.width, d.height);
+				pre = new SinglePreview(img, page, maxPage, d, gui);
 				this.add(pre);
 				this.revalidate();
 				// System.out.println("done");
 			}
+
+			renderer = null;
+			try {
+				Thread.sleep(1000);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			System.gc();
 			if (maxPage > 1) {
-				renderer = null;
-				try {
-					Thread.sleep(1000);
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-				System.gc();
-				System.out.print("Page "+page + " - ");
+				System.out.print("Page " + page + " - ");
 				TestMemory.printMemoryInfo();
 				renderer = new PDFToImageRendererPixels(pdffile);
 				TestMemory.printMemoryInfo();
 			}
 		}
+
 		this.revalidate();
 	}
 }

@@ -157,7 +157,7 @@ public class PDFToImageRendererPixels extends PDFToImageRenderer {
 	 * @return an image of the page at the given resolution.
 	 * @throws IOException
 	 */
-	public static BufferedImage getImageFromPDFAtLocation(String pdfLocation, int pageNum, int imageSize, int imageResolution) throws IOException {
+	public static BufferedImage getImageFromPDFAtLocation(String pdfLocation, int pageNum, int imageSize) throws IOException {
 		PDFFile pdf = getPDFFile(new File(pdfLocation));
 		if (pdf == null) { throw new IllegalArgumentException("You want to render the page #" + pageNum + " but the PDF could not be open."); }
 

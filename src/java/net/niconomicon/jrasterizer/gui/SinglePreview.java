@@ -11,6 +11,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.image.BufferedImage;
 
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
@@ -21,80 +22,83 @@ import javax.swing.JPanel;
  */
 public class SinglePreview extends JPanel {
 	BufferedImage extract;
-	final int imgWidth;
-	final int imgHeight;
-//	final int resolution;
+	final Dimension imageSize;
+	// final int resolution;
 	final int page;
 	final int maxPage;
 	final int extractSide;
+	final PDFRasterizerGUI gui;
 
-	public SinglePreview(BufferedImage img, int page, int pages, int extractSide, int width, int height) {
+	public SinglePreview(BufferedImage img, int page, int pages, Dimension imageFullSize, PDFRasterizerGUI gui) {
 		super(new BorderLayout());
 		this.extract = img;
-//		this.resolution = resolution;
+		// this.resolution = resolution;
 		this.page = page;
 		this.maxPage = pages;
-		this.extractSide = extractSide;
-		this.imgWidth = width;
-		this.imgHeight = height;
+		this.imageSize = imageFullSize;
+		this.gui = gui;
+		this.extractSide = img.getRaster().getBounds().width;
 		init();
 	}
 
 	private void init() {
 		this.setPreferredSize(new Dimension(extractSide, extractSide));
 
+		JButton b = new JButton("view");
+		b.addActionListener(new RenderAction(Math.max(imageSize.height, imageSize.width), maxPage, gui));
 		JPanel labels = new JPanel(new GridBagLayout());
 		JLabel l;
 		GridBagConstraints c;
 
+		int y = 0;
 		l = new JLabel("Page");
 		c = new GridBagConstraints();
-		c.gridy = 0;
+		c.gridy = y++;
 		c.gridx = 0;
 		c.anchor = GridBagConstraints.NORTHWEST;
 		labels.add(l, c);
-
-//		l = new JLabel("Resolution");
-//		c = new GridBagConstraints();
-//		c.gridy = 1;
-//		c.gridx = 0;
-//		c.anchor = GridBagConstraints.NORTHWEST;
-//		labels.add(l, c);
 
 		l = new JLabel("Dimensions");
 		c = new GridBagConstraints();
-		c.gridy = 2;
+		c.gridy = y++;
 		c.gridx = 0;
 		c.anchor = GridBagConstraints.NORTHWEST;
 		labels.add(l, c);
 
+		c = new GridBagConstraints();
+		c.gridy = y++;
+		c.gridx = 0;
+		c.anchor = GridBagConstraints.NORTHWEST;
+		labels.add(b, c);
+
+		y = 0;
 		l = new JLabel(": " + page + " /" + maxPage);
 		c = new GridBagConstraints();
-		c.gridy = 0;
+		c.gridy = y++;
 		c.gridx = 1;
 		c.anchor = GridBagConstraints.NORTHWEST;
 		labels.add(l, c);
 
-//		l = new JLabel(": ~ " + resolution + " dpi");
-//		c = new GridBagConstraints();
-//		c.gridy = 1;
-//		c.gridx = 1;
-//		c.anchor = GridBagConstraints.NORTHWEST;
-//		labels.add(l, c);
-
-		l = new JLabel(": " + imgWidth + "x" + imgHeight + " px");
+		l = new JLabel(": " + imageSize.width + "x" + imageSize.height + " px");
 		c = new GridBagConstraints();
-		c.gridy = 2;
+		c.gridy = y++;
 		c.gridx = 1;
 		c.anchor = GridBagConstraints.NORTHWEST;
 		labels.add(l, c);
+
+		b = new JButton("save");
+		c = new GridBagConstraints();
+		c.gridy = y++;
+		c.gridx = 1;
+		c.anchor = GridBagConstraints.NORTHEAST;
+		labels.add(b, c);
 
 		labels.setBackground(new Color(192, 192, 192, 192));
 
 		labels.revalidate();
 
 		// Boundaries
-		
+
 		int lh = 60;
 		int ly = extractSide - lh;
 		labels.setBounds(1, ly + 1, extractSide, lh);
