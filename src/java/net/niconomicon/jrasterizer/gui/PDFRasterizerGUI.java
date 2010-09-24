@@ -9,8 +9,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-
-import net.niconomicon.jrasterizer.PDFToImageRendererDPI;
+import javax.swing.UIManager;
 
 import com.sun.media.jai.widget.DisplayJAI;
 
@@ -107,6 +106,10 @@ public class PDFRasterizerGUI {
 		previewSP.repaint();
 	}
 
+	public void saveImage(int page) {
+
+	}
+
 	public BufferedImage getImage() {
 		return img;
 	}
@@ -114,9 +117,12 @@ public class PDFRasterizerGUI {
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
+		UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+for (int i = 0; i < UIManager.getInstalledLookAndFeels().length; i++) {
+	System.out.println("lnfs : "+  UIManager.getInstalledLookAndFeels()[i]);
+}
 		PDFRasterizerGUI rast = new PDFRasterizerGUI();
 	}
-
 }
