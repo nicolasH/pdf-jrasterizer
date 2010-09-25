@@ -28,8 +28,8 @@ public class Previewer extends JPanel {
 
 	public int extractSide = 200;
 	public static final int LIMIT = 10000;
-	public static final int[] sizes = new int[] { 500, 1000, 2000, 4000 };// , 6000, 9000 };
-
+//	public static final int[] sizes = new int[] { 500, 1000, 2000, 4000 };// , 6000, 9000 };
+	public static final int[] sizes = new int[] { 4000, 2000, 1000, 500 };// , 6000, 9000 };
 	PDFRasterizerGUI gui;
 	String pdfFile;
 
@@ -110,21 +110,21 @@ public class Previewer extends JPanel {
 			this.add(choo, c);
 			this.revalidate();
 
-			renderer = null;
-			try {
-				Thread.sleep(1000);
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-			System.gc();
-			if (maxPage > 1) {
-				System.out.print("Page " + page + " - ");
-				TestMemory.printMemoryInfo();
+			System.out.print("Page " + page + " - ");
+			TestMemory.printMemoryInfo();
+			if (TestMemory.getAvailableMemory() < 0.20) {
+				System.out.println("Cleaning up the renderer.");
+				renderer = null;
+				try {
+					Thread.sleep(1000);
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+				System.gc();
 				renderer = new PDFToImageRendererPixels(pdffile);
 				TestMemory.printMemoryInfo();
 			}
 		}
-
 		this.revalidate();
 	}
 }

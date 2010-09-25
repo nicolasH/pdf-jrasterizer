@@ -121,7 +121,7 @@ public class SinglePreviewSizeChooser extends JPanel {
 		c.anchor = GridBagConstraints.NORTHEAST;
 		labels.add(b, c);
 
-		labels.setBackground(new Color(192, 192, 192, 192));
+		labels.setBackground(new Color(192, 192, 192, 255));
 
 		labels.revalidate();
 
@@ -166,6 +166,7 @@ public class SinglePreviewSizeChooser extends JPanel {
 		public void run() {
 			int maxSide = spinnerModel.getNumber().intValue();
 			dimensionLabel.setText(": "+maxSide + "x" + (int) (maxSide / ratio) + " px");
+			dimensionLabel.revalidate();
 		}
 
 	}

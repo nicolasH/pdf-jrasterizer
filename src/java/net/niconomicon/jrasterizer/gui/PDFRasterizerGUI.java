@@ -58,7 +58,7 @@ public class PDFRasterizerGUI {
 		p.add(savePanel.contentPane);
 		contentPane.add(p, BorderLayout.NORTH);
 		contentPane.add(previewSP, BorderLayout.CENTER);
-		contentPane.setPreferredSize(new Dimension(816, 600));
+		contentPane.setPreferredSize(new Dimension(1024, 600));
 		frame.setContentPane(contentPane);
 
 		frame.pack();

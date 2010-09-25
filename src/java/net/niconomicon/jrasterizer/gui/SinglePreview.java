@@ -11,6 +11,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.image.BufferedImage;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
@@ -28,6 +29,7 @@ public class SinglePreview extends JPanel {
 	final int maxPage;
 	final int extractSide;
 	final PDFRasterizerGUI gui;
+	final static int labelPanelHeigth = 60;
 
 	public SinglePreview(BufferedImage img, int page, int pages, Dimension imageFullSize, PDFRasterizerGUI gui) {
 		super(new BorderLayout());
@@ -41,11 +43,19 @@ public class SinglePreview extends JPanel {
 		init();
 	}
 
+	public static Dimension getFuturDims(int extractSize) {
+		return new Dimension(extractSize + 2, extractSize + 2 + labelPanelHeigth);
+	}
+
 	private void init() {
 		this.setPreferredSize(new Dimension(extractSide, extractSide));
 
+		Color transparentBackground = new Color(150, 150, 150, 192);
+
 		JButton b = new JButton("view");
-		b.addActionListener(new RenderAction(Math.max(imageSize.height, imageSize.width),null, page, gui));
+		b.setOpaque(false);
+
+		b.addActionListener(new RenderAction(Math.max(imageSize.height, imageSize.width), null, page, gui));
 		JPanel labels = new JPanel(new GridBagLayout());
 		JLabel l;
 		GridBagConstraints c;
@@ -93,15 +103,14 @@ public class SinglePreview extends JPanel {
 		c.anchor = GridBagConstraints.NORTHEAST;
 		labels.add(b, c);
 
-		labels.setBackground(new Color(192, 192, 192, 192));
+		labels.setBackground(new Color(150, 150, 150, 255));
 
 		labels.revalidate();
 
 		// Boundaries
 
-		int lh = 60;
-		int ly = extractSide - lh;
-		labels.setBounds(1, ly + 1, extractSide, lh);
+		int ly = extractSide - labelPanelHeigth;
+		labels.setBounds(1, ly + 1, extractSide, labelPanelHeigth);
 
 		JLabel background = new JLabel(" ");
 		background.setBackground(Color.black);
@@ -125,6 +134,7 @@ public class SinglePreview extends JPanel {
 		pane.add(labels, new Integer(3));
 
 		this.add(pane, BorderLayout.CENTER);
+		this.setBorder(BorderFactory.createLineBorder(Color.black));
 	}
 
 	public class BackgroundPanel extends JPanel {
