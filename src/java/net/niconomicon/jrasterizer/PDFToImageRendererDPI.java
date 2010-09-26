@@ -12,6 +12,8 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
+import net.niconomicon.jrasterizer.utils.FastClipper;
+
 import com.sun.pdfview.PDFFile;
 import com.sun.pdfview.PDFPage;
 
@@ -142,13 +144,10 @@ public class PDFToImageRendererDPI extends PDFToImageRenderer {
 		int cH = (int) Math.min(pageSize.height, clipSize);
 
 		Rectangle clip = new Rectangle(cX, cY, cW, cH);
-		System.out.println("Clip : " + clip);
 		// get the new image, waiting until the pdf has been fully rendered.
 		// BufferedImage image = (BufferedImage) page.getImage(pageSize.width, pageSize.height, null, null, true, true);
 		BufferedImage image = (BufferedImage) pdf.getPage(pageNum).getImage(pageSize.width, pageSize.height, null, null, true, true);
-		System.out.println("image " + image.getWidth() + " + " + image.getHeight());
-		BufferedImage ret = image.getSubimage(cX, cY, cW, cH);
-		// supposedly releasing 'image'
+		BufferedImage ret = FastClipper.fastClip(image, clip);
 		image = null;
 		return ret;
 	}
