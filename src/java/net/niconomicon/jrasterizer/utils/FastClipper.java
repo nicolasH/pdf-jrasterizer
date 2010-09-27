@@ -116,38 +116,29 @@ public class FastClipper {
 		BufferedImage src = ImageIO.read(file);
 		long start, stop;
 		Rectangle clip = new Rectangle((src.getWidth() - 200) / 2, (src.getHeight() - 200) / 2, 200, 200);
-		//
 
+		int m = 10;
 		int n = 1000;
-		start = System.currentTimeMillis();
-		for (int i = 0; i < n; i++) {
-			FastClipper.fastClip(src, clip);
+		for (int k = 0; k < m; k++) {
+			start = System.currentTimeMillis();
+			for (int i = 0; i < n; i++) {
+				FastClipper.fastClip(src, clip);
+			}
+			stop = System.currentTimeMillis();
+			System.out.println("fastClip :" + n + " times = " + (stop - start) + " ms");
 		}
-		stop = System.currentTimeMillis();
-		System.out.println("fast : stop - start = " + (stop - start) + " ms");
-
-		start = System.currentTimeMillis();
-		for (int i = 0; i < n; i++) {
-			FastClipper.fastClip(src, clip);
+		for (int k = 0; k < m; k++) {
+			start = System.currentTimeMillis();
+			for (int i = 0; i < n; i++) {
+				FastClipper.slowClip(src, clip);
+			}
+			stop = System.currentTimeMillis();
+			System.out.println("slowClip :" + n + " times = " + (stop - start) + " ms");
 		}
-		stop = System.currentTimeMillis();
-		System.out.println("fast : stop - start = " + (stop - start) + " ms");
+	}
 
-		start = System.currentTimeMillis();
-		for (int i = 0; i < n; i++) {
-			FastClipper.slowClip(src, clip);
-		}
-		stop = System.currentTimeMillis();
-		System.out.println("slow : stop - start = " + (stop - start) + " ms");
-
-		start = System.currentTimeMillis();
-		for (int i = 0; i < n; i++) {
-			FastClipper.slowClip(src, clip);
-		}
-		stop = System.currentTimeMillis();
-		System.out.println("slow : stop - start = " + (stop - start) + " ms");
-
-		n = 9;
+	public static void showClips(BufferedImage src, Rectangle clip) {
+		int n = 9;
 		int rowLength = 3;
 		JFrame frame = new JFrame();
 		JPanel slowClip = new JPanel(new GridLayout(0, rowLength));
@@ -163,7 +154,7 @@ public class FastClipper {
 		split.add(left);
 		split.add(right);
 		frame.setContentPane(split);
-
+		long start, stop;
 		start = System.currentTimeMillis();
 		for (int i = 0; i < n; i++) {
 			JLabel l = new JLabel(new ImageIcon(FastClipper.fastClip(src, clip)));
@@ -182,5 +173,6 @@ public class FastClipper {
 
 		frame.pack();
 		frame.setVisible(true);
+
 	}
 }
