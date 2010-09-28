@@ -51,6 +51,10 @@ public class FastClipper {
 	 * @return an image which is identical to the part of the image of src in the area described by clip.
 	 */
 	public static BufferedImage fastClip(final BufferedImage src, Rectangle clip) {
+		return fastClip(src, clip, false);
+	}
+
+	public static BufferedImage fastClip(final BufferedImage src, Rectangle clip, boolean flipVertically) {
 		BufferedImage dst = new BufferedImage(clip.width, clip.height, src.getType());
 
 		Object srcbuf = null;
@@ -94,17 +98,32 @@ public class FastClipper {
 			factor = ((DataBufferUShort) buff).getData().length / mpx;
 		}
 
-		int srcOffset = src.getWidth() * clip.y * factor + clip.x * factor;
-		int dstOffset = 0;
+		int srcOffset, dstOffset = 0;
 
-		final int dstLineOffset = clip.width * factor;
-		final int srcLineOffset = src.getWidth() * factor;
+		int dstLineOffset, srcLineOffset = 0;
 
+		final int copyLength = clip.width * factor;
+
+		if (flipVertically) {
+			// reading backward
+			srcOffset = src.getWidth() * (clip.y + clip.height - 1) * factor + clip.x * factor;
+			dstLineOffset = clip.width * factor;
+			srcLineOffset = -src.getWidth() * factor;
+
+		} else {
+			// reading forward
+			srcOffset = src.getWidth() * clip.y * factor + clip.x * factor;
+
+			dstLineOffset = clip.width * factor;
+			srcLineOffset = src.getWidth() * factor;
+		}
 		for (int y = 0; y < clip.height; y++) {
-			System.arraycopy(srcbuf, srcOffset, dstbuf, dstOffset, clip.width * factor);
+			System.arraycopy(srcbuf, srcOffset, dstbuf, dstOffset, copyLength);
+
 			srcOffset += srcLineOffset;
 			dstOffset += dstLineOffset;
 		}
+
 		return dst;
 	}
 
@@ -114,9 +133,15 @@ public class FastClipper {
 	public static void main(String[] args) throws IOException {
 		File file = new File(args[0]);
 		BufferedImage src = ImageIO.read(file);
-		long start, stop;
-		Rectangle clip = new Rectangle((src.getWidth() - 200) / 2, (src.getHeight() - 200) / 2, 200, 200);
+		int clipWidth = 200;
+		int clipHeight = 10;
+		Rectangle clip = new Rectangle((src.getWidth() - clipWidth) / 2, (src.getHeight() - clipHeight) / 2, clipWidth, clipHeight);
 
+		if (args.length > 1) {
+			showClips(src, clip);
+			return;
+		}
+		long start, stop;
 		int m = 10;
 		int n = 1000;
 		for (int k = 0; k < m; k++) {
@@ -127,6 +152,15 @@ public class FastClipper {
 			stop = System.currentTimeMillis();
 			System.out.println("fastClip :" + n + " times = " + (stop - start) + " ms");
 		}
+		for (int k = 0; k < m; k++) {
+			start = System.currentTimeMillis();
+			for (int i = 0; i < n; i++) {
+				FastClipper.fastClip(src, clip, true);
+			}
+			stop = System.currentTimeMillis();
+			System.out.println("flipClip :" + n + " times = " + (stop - start) + " ms");
+		}
+
 		for (int k = 0; k < m; k++) {
 			start = System.currentTimeMillis();
 			for (int i = 0; i < n; i++) {
@@ -157,7 +191,7 @@ public class FastClipper {
 		long start, stop;
 		start = System.currentTimeMillis();
 		for (int i = 0; i < n; i++) {
-			JLabel l = new JLabel(new ImageIcon(FastClipper.fastClip(src, clip)));
+			JLabel l = new JLabel(new ImageIcon(FastClipper.fastClip(src, clip, false)));
 			fastClip.add(l);
 		}
 		stop = System.currentTimeMillis();
@@ -165,7 +199,7 @@ public class FastClipper {
 
 		start = System.currentTimeMillis();
 		for (int i = 0; i < n; i++) {
-			JLabel l = new JLabel(new ImageIcon(FastClipper.slowClip(src, clip)));
+			JLabel l = new JLabel(new ImageIcon(FastClipper.fastClip(src, clip, true)));
 			slowClip.add(l);
 		}
 		stop = System.currentTimeMillis();
