@@ -11,6 +11,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
 
+import net.niconomicon.jrasterizer.PDFToImageRendererPixels;
+
 import com.sun.media.jai.widget.DisplayJAI;
 
 /**
@@ -30,6 +32,7 @@ public class PDFRasterizerGUI {
 
 	SavePanel savePanel;
 	OpenPanel openPanel;
+	SaveDialog saveDialog;
 
 	BufferedImage img;
 
@@ -46,6 +49,7 @@ public class PDFRasterizerGUI {
 
 		openPanel = new OpenPanel(this);
 		savePanel = new SavePanel(this);
+		saveDialog = new SaveDialog(this);
 
 		jaiPanel = new DisplayJAI();
 		jaiSP = new JScrollPane(jaiPanel);
@@ -69,6 +73,7 @@ public class PDFRasterizerGUI {
 	public void setPDFFile(File f) {
 		currentFile = f;
 		savePanel.setCurrentFile(f);
+		saveDialog.setCurrentFile(f);
 	}
 
 	public File getCurrentFile() {
@@ -106,12 +111,9 @@ public class PDFRasterizerGUI {
 		previewSP.repaint();
 	}
 
-	public void saveImage(int page) {
+	public BufferedImage getImage(int page, Dimension dim) {
 
-	}
-
-	public BufferedImage getImage() {
-		return img;
+		return null;
 	}
 
 	/**
@@ -120,9 +122,9 @@ public class PDFRasterizerGUI {
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
 		UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
-for (int i = 0; i < UIManager.getInstalledLookAndFeels().length; i++) {
-	System.out.println("lnfs : "+  UIManager.getInstalledLookAndFeels()[i]);
-}
+		for (int i = 0; i < UIManager.getInstalledLookAndFeels().length; i++) {
+			System.out.println("lnfs : " + UIManager.getInstalledLookAndFeels()[i]);
+		}
 		PDFRasterizerGUI rast = new PDFRasterizerGUI();
 	}
 }

@@ -3,6 +3,7 @@
  */
 package net.niconomicon.jrasterizer.gui;
 
+import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -17,6 +18,7 @@ import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
@@ -138,6 +140,11 @@ public class SavePanel {
 		SwingUtilities.invokeLater(new DefaultFileSetter());
 	}
 
+	public void save(int page, Dimension dim) {
+		int i = JOptionPane.showOptionDialog(gui.frame, contentPane, "Save rasterized page", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null, new String[] { "Save this page", "Save each page", "Cancel" }, null);
+		System.out.println("The returned value was " + i);
+	}
+
 	private class DefaultFileSetter implements Runnable {
 
 		public void run() {
@@ -213,7 +220,7 @@ public class SavePanel {
 		}
 
 		public void run() {
-			BufferedImage img = gui.getImage();
+			BufferedImage img = gui.getImage(0, null);
 			String pathToSavedFile = to.getText();
 			pathToSavedFile += (pathToSavedFile.endsWith(File.separator) ? "" : File.separator);
 			pathToSavedFile += as.getText();

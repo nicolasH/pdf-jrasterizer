@@ -9,6 +9,8 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 
 import javax.swing.BorderFactory;
@@ -97,6 +99,7 @@ public class SinglePreview extends JPanel {
 		labels.add(l, c);
 
 		b = new JButton("save");
+		b.addActionListener(new SaveAction());
 		c = new GridBagConstraints();
 		c.gridy = y++;
 		c.gridx = 1;
@@ -143,5 +146,11 @@ public class SinglePreview extends JPanel {
 			super.paintComponent(g);
 		}
 
+	}
+
+	public class SaveAction implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			gui.saveDialog.save(page, maxPage, imageSize);
+		}
 	}
 }
