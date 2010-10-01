@@ -243,7 +243,7 @@ public class SaveDialog {
 		c.fill = c.REMAINDER;
 		c.anchor = c.NORTHWEST;
 		contentPane.add(finalName, c);
-//		finalName.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		// finalName.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
 		contentPane.setSize(new Dimension(400, 200));
 		contentPane.setPreferredSize(new Dimension(400, 200));
@@ -266,6 +266,9 @@ public class SaveDialog {
 		int answer = JOptionPane.showOptionDialog(gui.frame, contentPane, "Save rasterized page", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null, new String[] { "Save", "Cancel" }, null);
 		System.out.println("The returned value was " + answer);
 		if (answer == 0) {
+			Thread saver = new Thread(new SaveImageToFormat());
+			// save.setEnabled(false);
+			saver.start();
 			System.out.println("Should save the pages, you know");
 		}
 	}
@@ -366,8 +369,8 @@ public class SaveDialog {
 		String format;
 		String destinationFile;
 
-		public SaveImageToFormat(String format) {
-			this.format = format;
+		public SaveImageToFormat() {
+			this.format = getImageFormat();
 			String s = to.getText();
 			String otherS = as.getText();
 			if (otherS.endsWith(File.separator)) {
@@ -396,8 +399,6 @@ public class SaveDialog {
 				pathToSavedFile += (pathToSavedFile.endsWith(File.separator) ? "" : File.separator);
 				pathToSavedFile += as.getText();
 				System.out.println("file : " + pathToSavedFile);
-				String format = getImageFormat();
-
 				try {
 					File dest = new File(pathToSavedFile);
 					ImageIO.write(img, format, dest);
