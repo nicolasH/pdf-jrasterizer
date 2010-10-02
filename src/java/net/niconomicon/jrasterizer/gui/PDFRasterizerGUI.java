@@ -11,8 +11,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
 
-import net.niconomicon.jrasterizer.PDFToImageRendererPixels;
-
 import com.sun.media.jai.widget.DisplayJAI;
 
 /**

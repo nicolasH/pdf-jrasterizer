@@ -10,7 +10,8 @@ import java.io.File;
 
 import javax.swing.SpinnerNumberModel;
 
-import net.niconomicon.jrasterizer.PDFToImageRendererPixels;
+import net.niconomicon.jrasterizer.PDFToImageRenderer;
+import net.niconomicon.jrasterizer.PDFToImageRenderer.UNIT;
 
 /**
  * @author Nicolas Hoibian
@@ -42,7 +43,7 @@ public class RenderAction implements Runnable, ActionListener {
 
 	public void run() {
 		try {
-			BufferedImage image = PDFToImageRendererPixels.getImageFromPDFAtLocation(file.getAbsolutePath(), page, side);
+			BufferedImage image = PDFToImageRenderer.getImageFromPDFAtLocation(file.getAbsolutePath(), page, UNIT.PIXEL, side);
 			gui.setImage(image);
 		} catch (Exception ex) {
 			ex.printStackTrace();

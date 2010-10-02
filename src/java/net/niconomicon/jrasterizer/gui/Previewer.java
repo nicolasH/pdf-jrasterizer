@@ -3,21 +3,19 @@
  */
 package net.niconomicon.jrasterizer.gui;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import net.niconomicon.jrasterizer.PDFToImageRendererPixels;
+import net.niconomicon.jrasterizer.PDFToImage;
+import net.niconomicon.jrasterizer.PDFToImageRenderer;
+import net.niconomicon.jrasterizer.PDFToImageRenderer.UNIT;
 import net.niconomicon.jrasterizer.utils.TestMemory;
 
 /**
@@ -28,8 +26,9 @@ public class Previewer extends JPanel {
 
 	public int extractSide = 200;
 	public static final int LIMIT = 10000;
-//	public static final int[] sizes = new int[] { 500, 1000, 2000, 4000 };// , 6000, 9000 };
-	public static final int[] sizes = new int[] { 4000, 2000, 1000, 500 };// , 6000, 9000 };
+	public static final int[] sizes = new int[] { 500, 1000, 2000, 4000 };// , 6000, 9000 };
+	public static final int defaultBiggerSize = 5000;
+	// public static final int[] sizes = new int[] { 4000, 2000, 1000, 500 };// , 6000, 9000 };
 	PDFRasterizerGUI gui;
 	String pdfFile;
 
@@ -57,8 +56,8 @@ public class Previewer extends JPanel {
 			this.getComponent(i).setVisible(false);
 		}
 		this.repaint();
-		PDFToImageRendererPixels renderer;
-		renderer = new PDFToImageRendererPixels(pdffile);
+		PDFToImage renderer;
+		renderer = new PDFToImageRenderer(UNIT.PIXEL, pdffile);
 
 		int maxPage = renderer.getPageCount();
 
@@ -67,7 +66,9 @@ public class Previewer extends JPanel {
 
 		this.setLayout(new GridBagLayout());
 
-		GridBagConstraints c = new GridBagConstraints();
+		GridBagConstraints c;
+		// spacer bottom.
+		c = new GridBagConstraints();
 		c.gridwidth = sizes.length;
 		c.gridy = maxPage;
 		c.weighty = 1.0;
@@ -76,30 +77,42 @@ public class Previewer extends JPanel {
 		JLabel l = new JLabel("  ");
 		l.setSize(extractSide * sizes.length, 1);
 		l.setMinimumSize(new Dimension(extractSide * (sizes.length + 1), 1));
+		this.add(l, c);
 
+		// spacer right
+		c = new GridBagConstraints();
+		c.gridx = sizes.length + 1;
+		c.gridwidth = 1;
+		c.gridheight = maxPage;
+		c.gridy = 0;
+		c.weightx = 1.0;
+		c.fill = GridBagConstraints.REMAINDER;
+		c.anchor = GridBagConstraints.PAGE_END;
+		l = new JLabel("  ");
+		l.setSize(1, extractSide * maxPage);
+		l.setMinimumSize(new Dimension(1, extractSide * maxPage));
 		this.add(l, c);
 
 		this.revalidate();
 
 		for (int page = 1; page <= maxPage; page++) {
-			// for (int step = sizes.length - 1; step >= 0; step--) {
 			for (int step = 0; step < sizes.length; step++) {
 				int side = sizes[step];
-				Dimension d = renderer.getImageDimForSideLength(page, side);
-				// System.out.print("Page " + page + " - Trying to get the extract for dim : " + d + " ...");
+				Dimension d = renderer.getImageDimensions(page, side);
+				System.out.print("Page " + page + " - Trying to get the extract for dim : " + d + " ...");
 				SinglePreview pre;
 				BufferedImage img = renderer.getExtract(page, side, extractSide);
 				pre = new SinglePreview(img, page, maxPage, d, gui);
 				c = new GridBagConstraints();
-				// c.gridx = sizes.length - step - 1;
 				c.gridx = step;
 				c.gridy = page - 1;
 				c.fill = GridBagConstraints.NONE;
-				c.anchor = GridBagConstraints.FIRST_LINE_START;
+				c.anchor = GridBagConstraints.NORTHWEST;
+				System.out.println("imageDim : " + img.getWidth() + " by " + img.getHeight() + " pre : " + c.gridx + "," + c.gridy + " size :" + pre.getSize() + " " + pre.getPreferredSize());
 				this.add(pre, c);
 				this.revalidate();
 			}
-			Dimension d = renderer.getImageDimForSideLength(1, sizes[0]);
+			Dimension d = renderer.getImageDimensions(page, defaultBiggerSize);
 			double ratio = (double) (double) d.width / (double) d.height;
 			SinglePreviewSizeChooser choo = new SinglePreviewSizeChooser(page, maxPage, extractSide, ratio, gui);
 			c = new GridBagConstraints();
@@ -121,7 +134,7 @@ public class Previewer extends JPanel {
 					ex.printStackTrace();
 				}
 				System.gc();
-				renderer = new PDFToImageRendererPixels(pdffile);
+				renderer = new PDFToImageRenderer(UNIT.PIXEL, pdffile);
 				TestMemory.printMemoryInfo();
 			}
 		}

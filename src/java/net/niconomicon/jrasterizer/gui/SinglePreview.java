@@ -45,14 +45,10 @@ public class SinglePreview extends JPanel {
 		init();
 	}
 
-	public static Dimension getFuturDims(int extractSize) {
-		return new Dimension(extractSize + 2, extractSize + 2 + labelPanelHeigth);
-	}
-
 	private void init() {
 		this.setPreferredSize(new Dimension(extractSide, extractSide));
 
-		Color transparentBackground = new Color(150, 150, 150, 192);
+		// Color transparentBackground = new Color(150, 150, 150, 192);
 
 		JButton b = new JButton("view");
 		b.setOpaque(false);
@@ -113,12 +109,12 @@ public class SinglePreview extends JPanel {
 		// Boundaries
 
 		int ly = extractSide - labelPanelHeigth;
-		labels.setBounds(1, ly + 1, extractSide, labelPanelHeigth);
+		labels.setBounds(0, ly, extractSide, labelPanelHeigth);
 
 		JLabel background = new JLabel(" ");
 		background.setBackground(Color.black);
 		background.setForeground(Color.black);
-		background.setBounds(0, 0, 202, 202);
+		background.setBounds(0, 0, extractSide, extractSide);
 		background.setOpaque(true);
 
 		JPanel image = new BackgroundPanel();
@@ -145,7 +141,6 @@ public class SinglePreview extends JPanel {
 			g.drawImage(extract, 0, 0, extractSide, extractSide, null);
 			super.paintComponent(g);
 		}
-
 	}
 
 	public class SaveAction implements ActionListener {
