@@ -38,7 +38,7 @@ public class TestMemory {
 		long freeMemory = runtime.freeMemory();
 		double percent = ((double) (freeMemory + maxMemory - allocatedMemory)) / (double) maxMemory;
 
-		System.out.println("Available memory = " + percent + "%");
+		// System.out.println("Available memory = " + percent + "%");
 		return percent;
 	}
 

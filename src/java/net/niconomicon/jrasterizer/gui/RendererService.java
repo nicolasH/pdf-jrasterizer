@@ -8,13 +8,12 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-import com.sun.pdfview.PDFFile;
-
 import net.niconomicon.jrasterizer.PDFToImage;
 import net.niconomicon.jrasterizer.PDFToImageRenderer;
 import net.niconomicon.jrasterizer.PDFToImageRenderer.UNIT;
-import net.niconomicon.jrasterizer.utils.SandboxMemory;
 import net.niconomicon.jrasterizer.utils.TestMemory;
+
+import com.sun.pdfview.PDFFile;
 
 /**
  * As there seems to be a memory leak in the {@link PDFFile} class, this class tries to work around it by always having
@@ -31,6 +30,11 @@ public class RendererService implements PDFToImage {
 	RASTERIZER_TYPE type;
 	double referenceRez;
 	PDFToImageRenderer current;
+	Thread switcherThread;
+
+	public boolean shouldStop = false;
+
+	Object lock;
 
 	public enum RASTERIZER_TYPE {
 		DPI, PIXELS
@@ -39,10 +43,13 @@ public class RendererService implements PDFToImage {
 	private RendererService(RASTERIZER_TYPE type, File pdf) {
 		this.type = type;
 		pdffile = pdf;
+		lock = new Object();
+		switcherThread = new Thread(new RendererSwitcher());
+		switcherThread.start();
 	}
 
-	public static void createService(RASTERIZER_TYPE type, File pdf) {
-		singleton = new RendererService(type, pdf);
+	public static RendererService createService(RASTERIZER_TYPE type, File pdf) {
+		return new RendererService(type, pdf);
 	}
 
 	/* (non-Javadoc)
@@ -50,7 +57,7 @@ public class RendererService implements PDFToImage {
 	 */
 	public void setReferenceResolution(double ref) {
 		this.referenceRez = ref;
-		synchronized (current) {
+		synchronized (lock) {
 			current.setReferenceResolution(ref);
 		}
 	}
@@ -59,7 +66,6 @@ public class RendererService implements PDFToImage {
 	 * @see net.niconomicon.jrasterizer.PDFToImage#getFileLocation()
 	 */
 	public String getFileLocation() {
-
 		return pdffile.getAbsolutePath();
 	}
 
@@ -68,7 +74,7 @@ public class RendererService implements PDFToImage {
 	 */
 	public void setPDFFromFileLocation(String pdfLocation) throws IOException {
 		this.pdffile = new File(pdfLocation);
-		synchronized (current) {
+		synchronized (lock) {
 			current.setPDFFromFileLocation(pdfLocation);
 		}
 	}
@@ -78,7 +84,7 @@ public class RendererService implements PDFToImage {
 	 */
 	public void setPDFFromFile(File pdfLocation) throws IOException {
 		this.pdffile = pdfLocation;
-		synchronized (current) {
+		synchronized (lock) {
 			current.setPDFFromFile(pdfLocation);
 
 		}
@@ -88,7 +94,7 @@ public class RendererService implements PDFToImage {
 	 * @see net.niconomicon.jrasterizer.PDFToImage#getPageCount()
 	 */
 	public int getPageCount() {
-		synchronized (current) {
+		synchronized (lock) {
 			return current.getPageCount();
 		}
 	}
@@ -97,7 +103,7 @@ public class RendererService implements PDFToImage {
 	 * @see net.niconomicon.jrasterizer.PDFToImage#getImageDimensions(int, int)
 	 */
 	public Dimension getImageDimensions(int pageNum, int info) {
-		synchronized (current) {
+		synchronized (lock) {
 			return current.getImageDimensions(pageNum, info);
 		}
 	}
@@ -106,7 +112,7 @@ public class RendererService implements PDFToImage {
 	 * @see net.niconomicon.jrasterizer.PDFToImage#getImageFromPDF(int, int)
 	 */
 	public BufferedImage getImageFromPDF(int pageNum, int info) {
-		synchronized (current) {
+		synchronized (lock) {
 			return current.getImageFromPDF(pageNum, info);
 		}
 	}
@@ -115,55 +121,86 @@ public class RendererService implements PDFToImage {
 	 * @see net.niconomicon.jrasterizer.PDFToImage#getExtract(int, int, int)
 	 */
 	public BufferedImage getExtract(int pageNum, int info, int clipSize) {
-		synchronized (current) {
+		synchronized (lock) {
 			return current.getExtract(pageNum, info, clipSize);
 		}
 	}
 
 	private class RendererSwitcher implements Runnable {
-		public boolean shouldStop = false;
 		PDFToImageRenderer a;
 		PDFToImageRenderer b;
 
-		public void run() {
-			initRenderer(a);
-			initRenderer(b);
+		double baselineMemory;
+		double threshold = 0.35;
+		double emergencyThreshold = 0.15;
 
+		public RendererSwitcher() {
+			a = null;
+			b = null;
+			a = initRenderer();
+			current = a;
+			b = initRenderer();
+			baselineMemory = TestMemory.getAvailableMemory();
+			threshold = 0.40 * baselineMemory;
+			emergencyThreshold = 0.2 * baselineMemory;
+			System.out.println("Threshold :" + threshold);
+		}
+
+		public void run() {
+			double lastMem = baselineMemory;
+			double mem;
+			boolean emergency = false;
 			while (!shouldStop) {
-				if (TestMemory.getAvailableMemory() < .20) {
+				mem = TestMemory.getAvailableMemory();
+				try {
 					boolean shouldResetA = false;
 					boolean shouldResetB = false;
-					synchronized (current) {
-						if (a == current && b != null) {
-							current = b;
-							shouldResetA = true;
-						} else {
-							if (b == current && a != null) {
-								current = a;
-								shouldResetB = true;
+					synchronized (lock) {
+						if (mem < threshold && lastMem >= threshold && !emergency) {
+							// take action
+							System.out.println("taking action : " + mem);
+							if (a == current && b != null) {
+								System.out.println("Switching current to b");
+								current = b;
+								shouldResetA = true;
 							} else {
-								System.err.println("Should not ever come here !!!!!!!!! There was a problem when trying to decide which renderer to reset.");
+								if (b == current && a != null) {
+									System.out.println("Switching current to a");
+									current = a;
+									shouldResetB = true;
+								} else {
+									System.err.println("Should not ever come here !!!!!!!!! There was a problem when trying to decide which renderer to reset.");
+								}
 							}
 						}
 					}
 					if (shouldResetA) {
-						initRenderer(a);
+						a = null;
+						System.runFinalization();
+						System.gc();
+						a = initRenderer();
+						System.runFinalization();
+						System.gc();
 					}
 					if (shouldResetB) {
-						initRenderer(b);
+						b = null;
+						System.runFinalization();
+						System.gc();
+						b = initRenderer();
+						System.runFinalization();
+						System.gc();
 					}
-				}
-				try {
-					Thread.sleep(500);
+					Thread.sleep(50);
+
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
+				lastMem = mem;
 			}
-
 		}
 
-		public void initRenderer(PDFToImageRenderer ren) {
-			ren = null;
+		public PDFToImageRenderer initRenderer() {
+			PDFToImageRenderer ren = null;
 
 			UNIT unit = UNIT.PIXEL;
 
@@ -180,6 +217,7 @@ public class RendererService implements PDFToImage {
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
+			return ren;
 		}
 	}
 }

@@ -12,7 +12,7 @@ import com.sun.pdfview.PDFFile;
 
 /**
  * @author Nicolas Hoibian
- *
+ * 
  */
 public interface PDFToImage {
 
