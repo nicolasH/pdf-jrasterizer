@@ -210,12 +210,29 @@ public class PDFToImageRenderer implements PDFToImage {
 
 		Rectangle clip = new Rectangle(cX, cY, cW, cH);
 		// get the new image, waiting until the pdf has been fully rendered.
-		// BufferedImage image = (BufferedImage) page.getImage(pageSize.width, pageSize.height, null, null, true, true);
-		BufferedImage image = getImageFromPDF(pageNum,info);
-//		BufferedImage image = (BufferedImage) pdf.getPage(pageNum).getImage(pageSize.width, pageSize.height, null, null, true, true);
+		BufferedImage image = getImageFromPDF(pageNum, info);
 		BufferedImage ret = FastClipper.fastClip(image, clip);
 		image = null;
 		return ret;
+	}
+
+	public void flushAllPages() {
+		if (pdf == null) { throw new IllegalArgumentException("You want to flush pages but no PDF has been set."); }
+
+		int numPages = pdf.getNumPages();
+		for (int i = 1; i <= numPages; i++) {
+			pdf.flushPage(i);
+		}
+	}
+
+	public void flushPage(int page) {
+		if (pdf == null) { throw new IllegalArgumentException("You want to render the page #" + page + " but no PDF has been set."); }
+
+		int numPages = pdf.getNumPages();
+
+		if (page < 1) { throw new IllegalArgumentException("You want to render the page #" + page + " but the pdf starts at page #1"); }
+		if (page > numPages) { throw new IllegalArgumentException("You want to render the page #" + page + " but the pdf only has #" + numPages + " pages"); }
+		pdf.flushPage(page);
 	}
 
 	/**
