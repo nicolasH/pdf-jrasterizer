@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
+import javax.imageio.ImageIO;
 import javax.swing.SpinnerNumberModel;
 
 import net.niconomicon.jrasterizer.PDFToImageRenderer;
@@ -17,34 +18,35 @@ import net.niconomicon.jrasterizer.PDFToImageRenderer.UNIT;
  * @author Nicolas Hoibian
  * 
  */
-public class RenderAction implements Runnable, ActionListener {
+public class SaveAction implements Runnable {
 
-	public void actionPerformed(ActionEvent e) {
-		if (null != model) {
-			side = model.getNumber().intValue();
-		}
-		Thread imageRendererThread = new Thread(this);
-		imageRendererThread.start();
-	}
-
-	File file;
-	int side = -1;
+	String file;
+	String imageFormat;
+	int info;
 	int page;
+
 	PDFRasterizerGUI gui;
 	SpinnerNumberModel model;
 
-	public RenderAction(int side, SpinnerNumberModel model, int page, PDFRasterizerGUI gui) {
+	public SaveAction(int page, int info, String format, String finalName, PDFRasterizerGUI gui) {
 		this.gui = gui;
-		this.file = gui.getCurrentFile();
-		this.side = side;
+		this.file = finalName;
+		this.info = info;
+		this.imageFormat = format;
 		this.page = page;
-		this.model = model;
 	}
 
 	public void run() {
+		System.out.println("saving image for page "+page);
 		try {
-			BufferedImage image = gui.service.getImageFromPDF(page, side);
-			gui.setImage(image);
+			BufferedImage img = gui.service.getImageFromPDF(page, info);
+			try {
+				File dest = new File(file);
+				ImageIO.write(img, imageFormat, dest);
+
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

@@ -56,10 +56,8 @@ public class Previewer extends JPanel {
 			this.getComponent(i).setVisible(false);
 		}
 		this.repaint();
-		PDFToImage renderer;
-		renderer = new PDFToImageRenderer(UNIT.PIXEL, pdffile);
 
-		int maxPage = renderer.getPageCount();
+		int maxPage = gui.service.getPageCount();
 
 		setPrefSize(maxPage);
 		this.getParent().validate();
@@ -98,10 +96,10 @@ public class Previewer extends JPanel {
 		for (int page = 1; page <= maxPage; page++) {
 			for (int step = 0; step < sizes.length; step++) {
 				int side = sizes[step];
-				Dimension d = renderer.getImageDimensions(page, side);
+				Dimension d = gui.service.getImageDimensions(page, side);
 				System.out.print("Page " + page + " - Trying to get the extract for dim : " + d + " ...");
 				SinglePreview pre;
-				BufferedImage img = renderer.getExtract(page, side, extractSide);
+				BufferedImage img = gui.service.getExtract(page, side, extractSide);
 				pre = new SinglePreview(img, page, maxPage, d, gui);
 				c = new GridBagConstraints();
 				c.gridx = step;
@@ -112,7 +110,7 @@ public class Previewer extends JPanel {
 				this.add(pre, c);
 				this.revalidate();
 			}
-			Dimension d = renderer.getImageDimensions(page, defaultBiggerSize);
+			Dimension d = gui.service.getImageDimensions(page, defaultBiggerSize);
 			double ratio = (double) (double) d.width / (double) d.height;
 			SinglePreviewSizeChooser choo = new SinglePreviewSizeChooser(page, maxPage, extractSide, ratio, gui);
 			c = new GridBagConstraints();
@@ -122,21 +120,7 @@ public class Previewer extends JPanel {
 			c.anchor = GridBagConstraints.FIRST_LINE_START;
 			this.add(choo, c);
 			this.revalidate();
-
 			System.out.print("Page " + page + " - ");
-			TestMemory.printMemoryInfo();
-			if (TestMemory.getAvailableMemory() < 0.20) {
-				System.out.println("Cleaning up the renderer.");
-				renderer = null;
-				try {
-					Thread.sleep(1000);
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-				System.gc();
-				renderer = new PDFToImageRenderer(UNIT.PIXEL, pdffile);
-				TestMemory.printMemoryInfo();
-			}
 		}
 		this.revalidate();
 	}

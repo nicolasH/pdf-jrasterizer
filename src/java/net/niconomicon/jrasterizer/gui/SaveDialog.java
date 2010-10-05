@@ -122,15 +122,6 @@ public class SaveDialog {
 		jpg.addActionListener(new FinalNameSetter());
 		png.setSelected(true);
 
-		// save = new JButton("Save Image");
-		// save.addActionListener(new ActionListener() {
-		// public void actionPerformed(ActionEvent e) {
-		// Thread saver = new Thread(new SaveImageToFormat((String) formats.getSelectedItem()));
-		// save.setEnabled(false);
-		// saver.start();
-		// }
-		// });
-
 		GridBagConstraints c;
 		int y = 0;
 		int x = 0;
@@ -266,10 +257,13 @@ public class SaveDialog {
 		int answer = JOptionPane.showOptionDialog(gui.frame, contentPane, "Save rasterized page", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null, new String[] { "Save", "Cancel" }, null);
 		System.out.println("The returned value was " + answer);
 		if (answer == 0) {
-			Thread saver = new Thread(new SaveImageToFormat());
-			// save.setEnabled(false);
-			saver.start();
-			System.out.println("Should save the pages, you know");
+			if (pageAll.isSelected()) {
+				for (int p = 1; p <= maxPage; p++) {
+					gui.addAction(new SaveAction(p, Math.max(dim.width, dim.height), getImageFormat(), getFinalName(p), gui));
+				}
+			} else {
+				gui.addAction(new SaveAction(page, Math.max(dim.width, dim.height), getImageFormat(), getFinalName(page), gui));
+			}
 		}
 	}
 
@@ -287,6 +281,15 @@ public class SaveDialog {
 			}
 			text += "...</body></html>";
 			finalName.setText(text);
+		}
+		finalName.revalidate();
+	}
+
+	public String getFinalName(int page) {
+		if (page == 0) {
+			return (to.getText() + File.separator + as.getText() + "." + getImageFormat());
+		} else {
+			return (to.getText() + File.separator + as.getText() + "_" + page + "." + getImageFormat());
 		}
 	}
 
@@ -307,7 +310,8 @@ public class SaveDialog {
 				fName = fName.substring(0, fName.lastIndexOf("."));
 			}
 			as.setText(fName);
-			finalName.setText(originalPDF.getParent() + File.separator + fName);
+			setFinalName();
+			// finalName.setText(originalPDF.getParent() + File.separator + fName);
 		}
 	}
 
@@ -362,51 +366,7 @@ public class SaveDialog {
 					ex.printStackTrace();
 				}
 			}
-		}
-	}
-
-	private class SaveImageToFormat implements Runnable {
-		String format;
-		String destinationFile;
-
-		public SaveImageToFormat() {
-			this.format = getImageFormat();
-			String s = to.getText();
-			String otherS = as.getText();
-			if (otherS.endsWith(File.separator)) {
-				destinationFile = otherS;
-			} else {
-				destinationFile = otherS + File.separator;
-			}
-			if (!s.endsWith(format)) {
-				destinationFile += "." + format;
-			} else {
-				destinationFile += "." + format;
-			}
-		}
-
-		public void run() {
-			int start, stop = 0;
-			if (pageAll.isSelected()) {
-				start = 1;
-				stop = maxPage;
-			} else {
-				start = stop = page;
-			}
-			for (int p = start; p <= stop; p++) {
-				BufferedImage img = gui.getImage(p, imageDim);
-				String pathToSavedFile = finalName.getText();
-				pathToSavedFile += (pathToSavedFile.endsWith(File.separator) ? "" : File.separator);
-				pathToSavedFile += as.getText();
-				System.out.println("file : " + pathToSavedFile);
-				try {
-					File dest = new File(pathToSavedFile);
-					ImageIO.write(img, format, dest);
-
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-			}
+			setFinalName();
 		}
 	}
 }

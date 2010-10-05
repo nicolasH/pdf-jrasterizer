@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.niconomicon</groupId>
 	<artifactId>pdf-jrasterizer</artifactId>
-	<version>0.0.3-SNAPSHOT</version>
+	<version>0.0.3</version>
 	<url>http://www.niconomicon.net/tests/maven/net/niconomicon/pdf-jrasterizer/</url>
 	<dependencies>
 		<dependency>
@@ -75,7 +75,7 @@
 					<!-- JNLP generation -->
 					<jnlp>
 						<outputFile>pdf-jrasterizer.jnlp</outputFile> <!-- defaults to launch.jnlp -->
-						<mainClass>net.niconomicon.jrasterizer.PDFRasterizerGUI</mainClass>
+						<mainClass>net.niconomicon.jrasterizer.gui.PDFRasterizerGUI</mainClass>
 					</jnlp>
 					<sign>
 						<keystore>/Users/niko/keystore_jnlp/ks</keystore>

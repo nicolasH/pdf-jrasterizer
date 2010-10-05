@@ -26,7 +26,7 @@ public class RendererService implements PDFToImage {
 
 	PDFToImage renderer;
 	File pdffile;
-	static RendererService singleton;
+
 	RASTERIZER_TYPE type;
 	double referenceRez;
 	PDFToImageRenderer current;

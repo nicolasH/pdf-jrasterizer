@@ -4,12 +4,15 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
+
+import net.niconomicon.jrasterizer.gui.RendererService.RASTERIZER_TYPE;
 
 import com.sun.media.jai.widget.DisplayJAI;
 
@@ -28,15 +31,16 @@ public class PDFRasterizerGUI {
 	DisplayJAI jaiPanel;
 	Previewer previewer;
 
-	SavePanel savePanel;
+	// SavePanel savePanel;
 	OpenPanel openPanel;
 	SaveDialog saveDialog;
-
+	RendererService service;
 	BufferedImage img;
 
 	JScrollPane previewSP;
 	JScrollPane jaiSP;
 	File currentFile;
+	Executor exe;
 
 	public PDFRasterizerGUI() {
 
@@ -46,7 +50,6 @@ public class PDFRasterizerGUI {
 		contentPane = new JPanel(new BorderLayout());
 
 		openPanel = new OpenPanel(this);
-		savePanel = new SavePanel(this);
 		saveDialog = new SaveDialog(this);
 
 		jaiPanel = new DisplayJAI();
@@ -55,22 +58,21 @@ public class PDFRasterizerGUI {
 		previewer = new Previewer(this);
 		previewSP = new JScrollPane(previewer);
 
-		JTabbedPane p = new JTabbedPane();
-		p.add(openPanel.contentPane);
-		p.add(savePanel.contentPane);
-		contentPane.add(p, BorderLayout.NORTH);
+		contentPane.add(openPanel.contentPane, BorderLayout.NORTH);
 		contentPane.add(previewSP, BorderLayout.CENTER);
 		contentPane.setPreferredSize(new Dimension(1024, 600));
 		frame.setContentPane(contentPane);
 
 		frame.pack();
 		frame.setVisible(true);
+		exe = Executors.newSingleThreadExecutor();
 
 	}
 
 	public void setPDFFile(File f) {
 		currentFile = f;
-		savePanel.setCurrentFile(f);
+		service = RendererService.createService(RASTERIZER_TYPE.PIXELS, f);
+		// savePanel.setCurrentFile(f);
 		saveDialog.setCurrentFile(f);
 	}
 
@@ -79,7 +81,6 @@ public class PDFRasterizerGUI {
 	}
 
 	public void setImage(BufferedImage image) {
-
 		this.img = image;
 
 		jaiPanel.set(this.img);
@@ -89,7 +90,6 @@ public class PDFRasterizerGUI {
 		contentPane.add(jaiSP, BorderLayout.CENTER);
 		jaiSP.revalidate();
 		contentPane.revalidate();
-
 	}
 
 	public void showExtracts(File f) {
@@ -109,9 +109,8 @@ public class PDFRasterizerGUI {
 		previewSP.repaint();
 	}
 
-	public BufferedImage getImage(int page, Dimension dim) {
-
-		return null;
+	public void addAction(Runnable action) {
+		exe.execute(action);
 	}
 
 	/**
