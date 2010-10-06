@@ -33,7 +33,6 @@ public class OpenPanel {
 	JFileChooser sourceChooser;
 
 	PDFFileFilter pdfFilter;
-	JTextField from;
 
 	Thread imageRendererThread;
 	PDFRasterizerGUI gui;
@@ -46,11 +45,9 @@ public class OpenPanel {
 	}
 
 	private void init() {
-		// ren = new PDFToImageRendererDPI();
+
 		contentPane = new JPanel(new GridBagLayout());
 
-		from = new JTextField();
-		from.addFocusListener(new InputActionListener());
 		JButton choose = new JButton("Choose pdf to rasterize");
 		choose.addActionListener(new InputActionListener());
 		pdfFilter = new PDFFileFilter();
@@ -75,12 +72,12 @@ public class OpenPanel {
 		c.gridy = 0;
 		contentPane.add(choose, c);
 
-		c = new GridBagConstraints();
-		c.gridy = 0;
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.weightx = 1.0;
-		// c.anchor = GridBagConstraints.LINE_END;
-		contentPane.add(from, c);
+		// c = new GridBagConstraints();
+		// c.gridy = 0;
+		// c.fill = GridBagConstraints.HORIZONTAL;
+		// c.weightx = 1.0;
+		// // c.anchor = GridBagConstraints.LINE_END;
+		// contentPane.add(from, c);
 
 		c = new GridBagConstraints();
 		c.gridy = 0;
@@ -117,36 +114,9 @@ public class OpenPanel {
 		}
 	}
 
-	private class InputActionListener implements ActionListener, FocusListener, MouseListener {
+	private class InputActionListener implements ActionListener {
 
-		public void mouseClicked(java.awt.event.MouseEvent e) {};
-
-		public void mouseEntered(java.awt.event.MouseEvent e) {};
-
-		public void mouseExited(java.awt.event.MouseEvent e) {};
-
-		public void mousePressed(java.awt.event.MouseEvent e) {};
-
-		public void mouseReleased(java.awt.event.MouseEvent e) {};
-
-		public void focusGained(FocusEvent e) {
-			// if the focus is gained by clicking then act.
-			// if the focus is lost because some popup closed, don't act.
-			System.out.println("Something gained focus");
-			Component c = e.getOppositeComponent();
-			System.out.println("Class : " + c);
-			if (c == null) { return; }
-			while (c != null && !(c instanceof JFrame)) {
-				System.out.println("Class : " + c);
-				if (c instanceof Dialog) { return; }
-				c = c.getParent();
-			}
-			act();
-		}
-
-		public void focusLost(FocusEvent e) {}
-
-		public void act() {
+		public void actionPerformed(ActionEvent arg0) {
 
 			String s = " some file";
 			int returnVal = sourceChooser.showOpenDialog(null);
@@ -156,21 +126,15 @@ public class OpenPanel {
 
 				try {
 					pdfFile = sourceChooser.getSelectedFile();
-					from.setText(pdfFile.getCanonicalPath());
 					Thread t = new Thread(new SetPDFAction());
 					t.start();
-					Thread.sleep(500);
+					Thread.sleep(100);
 					t = new Thread(new ExtractAction());
 					t.start();
 				} catch (Exception e) {
-					from.setText("cannot Open File");
 					e.printStackTrace();
 				}
 			}
-		}
-
-		public void actionPerformed(ActionEvent arg0) {
-			act();
 		}
 	}
 

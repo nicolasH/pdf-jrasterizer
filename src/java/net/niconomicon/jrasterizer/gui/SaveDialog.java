@@ -3,22 +3,20 @@
  */
 package net.niconomicon.jrasterizer.gui;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.File;
-import java.security.AllPermission;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
-import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -60,6 +58,7 @@ public class SaveDialog {
 	int page = 0;
 	Dimension imageDim;
 	int maxPage;
+	Executor updateExe;
 
 	public SaveDialog(PDFRasterizerGUI gui) {
 		this.gui = gui;
@@ -69,7 +68,7 @@ public class SaveDialog {
 	private void init() {
 		contentPane = new JPanel(new GridBagLayout());
 		contentPane.setName("Save Image");
-
+		updateExe = Executors.newSingleThreadExecutor();
 		// Choosing the destination :
 		if (System.getProperty("os.name").toLowerCase().contains("mac")) {
 			System.setProperty("apple.awt.fileDialogForDirectories", "true");
@@ -96,7 +95,7 @@ public class SaveDialog {
 		finalName = new JLabel();
 		as = new JTextField();
 		as.setSize(25, 100);
-
+		as.addKeyListener(new kListener());
 		pageLabel = new JLabel();
 		dimensions = new JLabel();
 		pageAll = new JRadioButton("all pages");
@@ -268,6 +267,7 @@ public class SaveDialog {
 	}
 
 	public void setFinalName() {
+		System.out.println("Setting final name. " + to.getText());
 		if (pageCurrent.isSelected()) {
 			finalName.setText(to.getText() + File.separator + as.getText() + "." + getImageFormat());
 		} else {
@@ -310,6 +310,7 @@ public class SaveDialog {
 				fName = fName.substring(0, fName.lastIndexOf("."));
 			}
 			as.setText(fName);
+			to.revalidate();
 			setFinalName();
 			// finalName.setText(originalPDF.getParent() + File.separator + fName);
 		}
@@ -323,8 +324,17 @@ public class SaveDialog {
 		}
 	}
 
-	private class FinalNameSetter implements ActionListener {
+	private class FinalNameSetter implements ActionListener, Runnable {
 		public void actionPerformed(ActionEvent e) {
+			updateExe.execute(this);
+		}
+
+		public void run() {
+			try {
+				Thread.sleep(100);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
 			setFinalName();
 		}
 	}
@@ -348,7 +358,7 @@ public class SaveDialog {
 					path = dir;
 				}
 				to.setText(path);
-
+				setFinalName();
 				return;
 			}
 			// ##
@@ -367,6 +377,16 @@ public class SaveDialog {
 				}
 			}
 			setFinalName();
+		}
+	}
+
+	public class kListener implements KeyListener {
+		public void keyPressed(KeyEvent e) {}
+
+		public void keyReleased(KeyEvent e) {}
+
+		public void keyTyped(KeyEvent e) {
+			updateExe.execute(new FinalNameSetter());
 		}
 	}
 }

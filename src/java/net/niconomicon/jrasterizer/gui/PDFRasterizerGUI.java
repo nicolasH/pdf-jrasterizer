@@ -72,7 +72,7 @@ public class PDFRasterizerGUI {
 	public void setPDFFile(File f) {
 		currentFile = f;
 		service = RendererService.createService(RASTERIZER_TYPE.PIXELS, f);
-		// savePanel.setCurrentFile(f);
+		this.frame.setTitle(f.getAbsolutePath());
 		saveDialog.setCurrentFile(f);
 	}
 
