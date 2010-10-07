@@ -9,8 +9,11 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
@@ -20,6 +23,8 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
+import net.niconomicon.jrasterizer.gui.SinglePreview.SaveAction;
 
 /**
  * @author niko
@@ -56,7 +61,7 @@ public class SinglePreviewSizeChooser extends JPanel {
 
 		JButton b = new JButton("view");
 		b.setOpaque(false);
-		b.addActionListener(new RenderAction(-1,spinnerModel, page, gui));
+		b.addActionListener(new RenderAction(-1, spinnerModel, page, gui));
 		JPanel labels = new JPanel(new GridBagLayout());
 		JLabel l;
 		GridBagConstraints c;
@@ -106,8 +111,8 @@ public class SinglePreviewSizeChooser extends JPanel {
 		c.anchor = GridBagConstraints.NORTHWEST;
 		labels.add(l, c);
 
-		dimensionLabel = new JLabel(": " + spinnerModel.getNumber().intValue() + "x" + (int)(spinnerModel.getNumber().intValue() / ratio) + " px");
-		System.out.println("ratio :"+ratio);
+		dimensionLabel = new JLabel(": " + spinnerModel.getNumber().intValue() + "x" + (int) (spinnerModel.getNumber().intValue() / ratio) + " px");
+		// System.out.println("ratio :"+ratio);
 		c = new GridBagConstraints();
 		c.gridy = y++;
 		c.gridx = 1;
@@ -115,13 +120,14 @@ public class SinglePreviewSizeChooser extends JPanel {
 		labels.add(dimensionLabel, c);
 
 		b = new JButton("save");
+		b.addActionListener(new SaveAction());
 		c = new GridBagConstraints();
 		c.gridy = y++;
 		c.gridx = 1;
 		c.anchor = GridBagConstraints.NORTHEAST;
 		labels.add(b, c);
 
-		labels.setBackground(new Color(192, 192, 192, 255));
+		labels.setBackground(new Color(150, 150, 150, 255));
 
 		labels.revalidate();
 
@@ -129,18 +135,18 @@ public class SinglePreviewSizeChooser extends JPanel {
 
 		int lh = 87;
 		int ly = extractSide - lh;
-		labels.setBounds(1, ly + 1, extractSide, lh);
+		labels.setBounds(0, ly, extractSide, lh);
 
 		JLabel background = new JLabel(" ");
 		background.setBackground(Color.black);
 		background.setForeground(Color.black);
-		background.setBounds(0, 0, 202, 202);
+		background.setBounds(0, 0, extractSide, extractSide);
 		background.setOpaque(true);
 
 		JPanel image = new BackgroundPanel();
 		image.setLayout(new BorderLayout());
 		if (extract == null) {
-			l = new JLabel("Too big to preview");
+			l = new JLabel("<html><body><center><p>Choose the maximum side of the image and thn click 'view' to see it.</p></center></body><html>");
 			image.add(l, BorderLayout.NORTH);
 			image.setOpaque(true);
 		} else {
@@ -153,6 +159,7 @@ public class SinglePreviewSizeChooser extends JPanel {
 		pane.add(labels, new Integer(3));
 
 		this.add(pane, BorderLayout.CENTER);
+		this.setBorder(BorderFactory.createLineBorder(Color.black));
 	}
 
 	private class UpdateResolutionAction implements ChangeListener {
@@ -165,7 +172,7 @@ public class SinglePreviewSizeChooser extends JPanel {
 	private class UpdateResolutionLabel implements Runnable {
 		public void run() {
 			int maxSide = spinnerModel.getNumber().intValue();
-			dimensionLabel.setText(": "+maxSide + "x" + (int) (maxSide / ratio) + " px");
+			dimensionLabel.setText(": " + maxSide + "x" + (int) (maxSide / ratio) + " px");
 			dimensionLabel.revalidate();
 		}
 
@@ -180,6 +187,12 @@ public class SinglePreviewSizeChooser extends JPanel {
 		protected void paintComponent(Graphics g) {
 			g.drawImage(extract, 0, 0, extractSide, extractSide, null);
 			super.paintComponent(g);
+		}
+	}
+
+	public class SaveAction implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			gui.saveDialog.save(page, maxPage, imageSize);
 		}
 	}
 }

@@ -9,14 +9,11 @@ import java.awt.GridBagLayout;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
-import net.niconomicon.jrasterizer.PDFToImage;
-import net.niconomicon.jrasterizer.PDFToImageRenderer;
-import net.niconomicon.jrasterizer.PDFToImageRenderer.UNIT;
-import net.niconomicon.jrasterizer.utils.TestMemory;
 
 /**
  * @author Nicolas Hoibian
@@ -32,9 +29,12 @@ public class Previewer extends JPanel {
 	PDFRasterizerGUI gui;
 	String pdfFile;
 
+	ExecutorService previewQueue;
+
 	public Previewer(PDFRasterizerGUI gui) {
 		super();
 		this.gui = gui;
+		previewQueue = Executors.newSingleThreadExecutor();
 		setPrefSize(2);
 	}
 
@@ -94,34 +94,50 @@ public class Previewer extends JPanel {
 		this.revalidate();
 
 		for (int page = 1; page <= maxPage; page++) {
-			for (int step = 0; step < sizes.length; step++) {
-				int side = sizes[step];
-				Dimension d = gui.service.getImageDimensions(page, side);
-				System.out.print("Page " + page + " - Trying to get the extract for dim : " + d + " ...");
-				SinglePreview pre;
-				BufferedImage img = gui.service.getExtract(page, side, extractSide);
-				pre = new SinglePreview(img, page, maxPage, d, gui);
-				c = new GridBagConstraints();
-				c.gridx = step;
-				c.gridy = page - 1;
-				c.fill = GridBagConstraints.NONE;
-				c.anchor = GridBagConstraints.NORTHWEST;
-				System.out.println("imageDim : " + img.getWidth() + " by " + img.getHeight() + " pre : " + c.gridx + "," + c.gridy + " size :" + pre.getSize() + " " + pre.getPreferredSize());
-				this.add(pre, c);
-				this.revalidate();
-			}
+			System.out.println("Page " + page + " ...");
 			Dimension d = gui.service.getImageDimensions(page, defaultBiggerSize);
 			double ratio = (double) (double) d.width / (double) d.height;
 			SinglePreviewSizeChooser choo = new SinglePreviewSizeChooser(page, maxPage, extractSide, ratio, gui);
 			c = new GridBagConstraints();
-			c.gridx = sizes.length;
+			c.gridx = 0;// sizes.length;
 			c.gridy = page - 1;
 			c.fill = GridBagConstraints.NONE;
 			c.anchor = GridBagConstraints.FIRST_LINE_START;
 			this.add(choo, c);
 			this.revalidate();
-			System.out.print("Page " + page + " - ");
+			for (int step = 0; step < sizes.length; step++) {
+				previewQueue.execute(new PostPonner(page, step, maxPage));
+			}
 		}
 		this.revalidate();
+	}
+
+	public class PostPonner implements Runnable {
+
+		int x;
+		int maxPage;
+		int page;
+
+		public PostPonner(int page, int x, int maxPage) {
+			this.page = page;
+			this.maxPage = maxPage;
+			this.x = x;
+		}
+
+		public void run() {
+			Dimension d;
+			int side = sizes[x];
+			d = gui.service.getImageDimensions(page, side);
+			SinglePreview pre;
+			BufferedImage img = gui.service.getExtract(page, side, extractSide);
+			pre = new SinglePreview(img, page, maxPage, d, gui);
+			GridBagConstraints c = new GridBagConstraints();
+			c.gridx = x + 1;
+			c.gridy = page - 1;
+			c.fill = GridBagConstraints.NONE;
+			c.anchor = GridBagConstraints.NORTHWEST;
+			add(pre, c);
+			revalidate();
+		}
 	}
 }

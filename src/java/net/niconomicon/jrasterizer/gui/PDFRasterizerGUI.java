@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import net.niconomicon.jrasterizer.gui.RendererService.RASTERIZER_TYPE;
@@ -82,28 +83,34 @@ public class PDFRasterizerGUI {
 
 	public void setImage(BufferedImage image) {
 		this.img = image;
-
 		jaiPanel.set(this.img);
 		contentPane.remove(previewSP);
 		previewSP.setVisible(false);
 		jaiSP.setVisible(true);
 		contentPane.add(jaiSP, BorderLayout.CENTER);
-		jaiSP.revalidate();
 		contentPane.revalidate();
+		jaiSP.revalidate();
+		openPanel.switchToViewMode(true);
 	}
 
-	public void showExtracts(File f) {
+	public void showExtracts() {
 		contentPane.remove(jaiSP);
 		jaiSP.setVisible(false);
 		previewSP.setVisible(true);
 		contentPane.add(previewSP, BorderLayout.CENTER);
 		if (previewer.getPDFToPreview() == null || previewer.getPDFToPreview().compareTo(currentFile.getAbsolutePath()) != 0) {
-			try {
-				previewer.setPDFToPreview(f);
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
+			Runnable r = new Runnable() {
+				public void run() {
+					try {
+						previewer.setPDFToPreview(currentFile);
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+				}
+			};
+			SwingUtilities.invokeLater(r);
 		}
+		openPanel.switchToViewMode(false);
 		previewSP.revalidate();
 		contentPane.revalidate();
 		previewSP.repaint();

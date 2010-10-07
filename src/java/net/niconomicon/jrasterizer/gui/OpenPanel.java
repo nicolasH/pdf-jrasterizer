@@ -3,22 +3,16 @@
  */
 package net.niconomicon.jrasterizer.gui;
 
-import java.awt.Component;
-import java.awt.Dialog;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.MouseListener;
 import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 
 import net.niconomicon.jrasterizer.PDFFileFilter;
 
@@ -39,6 +33,9 @@ public class OpenPanel {
 
 	File pdfFile;
 
+	JButton choose;
+	JButton preview;
+
 	public OpenPanel(PDFRasterizerGUI gui) {
 		this.gui = gui;
 		init();
@@ -48,7 +45,7 @@ public class OpenPanel {
 
 		contentPane = new JPanel(new GridBagLayout());
 
-		JButton choose = new JButton("Choose pdf to rasterize");
+		choose = new JButton("Choose pdf to rasterize");
 		choose.addActionListener(new InputActionListener());
 		pdfFilter = new PDFFileFilter();
 
@@ -60,36 +57,40 @@ public class OpenPanel {
 		sourceChooser.setCurrentDirectory(new File(System.getProperty(PDFRasterizerGUI.USER_HOME)));
 		// later : choose destination, type, resolution. Later
 
-		JButton preview = new JButton("Back to previews");
+		preview = new JButton("Back to previews");
 		preview.addActionListener(new ShowPDFResolutionsPreviewListener());
-
-		// JButton view = new JButton("show");
-		// view.addActionListener(new ShowPDFImageListener());
+		preview.setVisible(false);
 
 		// //////////////
 		// layout
-		GridBagConstraints c = new GridBagConstraints();
+		GridBagConstraints c;
+		c = new GridBagConstraints();
 		c.gridy = 0;
 		contentPane.add(choose, c);
 
-		// c = new GridBagConstraints();
-		// c.gridy = 0;
-		// c.fill = GridBagConstraints.HORIZONTAL;
-		// c.weightx = 1.0;
-		// // c.anchor = GridBagConstraints.LINE_END;
-		// contentPane.add(from, c);
+		c = new GridBagConstraints();
+		c.gridy = 0;
+		c.weightx = 1.0;
+		c.fill = c.HORIZONTAL;
+		contentPane.add(new JLabel(" "), c);
 
 		c = new GridBagConstraints();
 		c.gridy = 0;
 		c.anchor = GridBagConstraints.LINE_END;
 		contentPane.add(preview, c);
 
-		// c = new GridBagConstraints();
-		// c.gridy = 0;
-		// c.anchor = GridBagConstraints.LINE_END;
-		// contentPane.add(view, c);
-
 		contentPane.setName("OpenPDF");
+	}
+
+	public void switchToViewMode(boolean goToViewMode) {
+		if (goToViewMode) {
+			choose.setVisible(false);
+			preview.setVisible(true);
+		} else {
+			choose.setVisible(true);
+			preview.setVisible(false);
+		}
+
 	}
 
 	private class SetPDFAction implements Runnable {
@@ -97,17 +98,20 @@ public class OpenPanel {
 		public void run() {
 			try {
 				gui.setPDFFile(pdfFile);
+				gui.showExtracts();
+
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
 		}
 	}
 
+	
 	private class ExtractAction implements Runnable {
 
 		public void run() {
 			try {
-				gui.showExtracts(pdfFile);
+				gui.showExtracts();
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
@@ -128,9 +132,8 @@ public class OpenPanel {
 					pdfFile = sourceChooser.getSelectedFile();
 					Thread t = new Thread(new SetPDFAction());
 					t.start();
-					Thread.sleep(100);
-					t = new Thread(new ExtractAction());
-					t.start();
+					// Thread.sleep(100);
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -138,20 +141,20 @@ public class OpenPanel {
 		}
 	}
 
-	private class ShowPDFImageListener implements ActionListener {
+//	private class ShowPDFImageListener implements ActionListener {
+//
+//		public void actionPerformed(ActionEvent e) {
+//			// imageRendererThread = new Thread(new RenderAction());
+//			// imageRendererThread.start();
+//		}
+//	}
 
-		public void actionPerformed(ActionEvent e) {
-			// imageRendererThread = new Thread(new RenderAction());
-			// imageRendererThread.start();
-		}
-	}
-
-	private class ShowPDFResolutionsPreviewListener implements ActionListener {
-
-		public void actionPerformed(ActionEvent e) {
-			Thread prev = new Thread(new ExtractAction());
-			prev.start();
-		}
-	}
+	 private class ShowPDFResolutionsPreviewListener implements ActionListener {
+	
+	 public void actionPerformed(ActionEvent e) {
+	 Thread prev = new Thread(new ExtractAction());
+	 prev.start();
+	 }
+	 }
 
 }

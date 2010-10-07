@@ -158,62 +158,6 @@ public class RendererService implements PDFToImage {
 			System.out.println("Threshold :" + threshold);
 		}
 
-		// public void run() {
-		// double lastMem = baselineMemory;
-		// double mem;
-		// boolean emergency = false;
-		// while (!shouldStop) {
-		// mem = TestMemory.getAvailableMemory();
-		// try {
-		// boolean shouldResetA = false;
-		// boolean shouldResetB = false;
-		// synchronized (lock) {
-		// if (mem < threshold && lastMem >= threshold && !emergency) {
-		// // take action
-		// System.out.println("taking action : " + mem);
-		// if (a == current && b != null) {
-		// System.out.println("Switching current to b");
-		// current = b;
-		// shouldResetA = true;
-		// } else {
-		// if (b == current && a != null) {
-		// System.out.println("Switching current to a");
-		// current = a;
-		// shouldResetB = true;
-		// } else {
-		// System.err.println("Should not ever come here !!!!!!!!! There was a problem when trying to decide which renderer to reset.");
-		// }
-		// }
-		// }
-		// }
-		// if (shouldResetA) {
-		// synchronized (a) {
-		// a.flushAllPages();
-		// System.runFinalization();
-		// System.gc();
-		// }
-		// }
-		// if (shouldResetB) {
-		// synchronized (b) {
-		// b.flushAllPages();
-		// System.runFinalization();
-		// System.gc();
-		// }
-		// }
-		//
-		// if (mem < threshold) {
-		// System.runFinalization();
-		// System.gc();
-		// }
-		// Thread.sleep(50);
-		//
-		// } catch (Exception ex) {
-		// ex.printStackTrace();
-		// }
-		// lastMem = mem;
-		// }
-		// }
-
 		public void run() {
 			double lastMem = baselineMemory;
 			double mem;
