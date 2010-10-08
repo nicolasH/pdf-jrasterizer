@@ -35,6 +35,7 @@ public class OpenPanel {
 
 	JButton choose;
 	JButton preview;
+	JButton save;
 
 	public OpenPanel(PDFRasterizerGUI gui) {
 		this.gui = gui;
@@ -61,6 +62,10 @@ public class OpenPanel {
 		preview.addActionListener(new ShowPDFResolutionsPreviewListener());
 		preview.setVisible(false);
 
+		save = new JButton("Save");
+		// save.addActionListener(new ShowPDFResolutionsPreviewListener());
+		save.setVisible(false);
+
 		// //////////////
 		// layout
 		GridBagConstraints c;
@@ -77,6 +82,11 @@ public class OpenPanel {
 		c = new GridBagConstraints();
 		c.gridy = 0;
 		c.anchor = GridBagConstraints.LINE_END;
+		contentPane.add(save, c);
+
+		c = new GridBagConstraints();
+		c.gridy = 0;
+		c.anchor = GridBagConstraints.LINE_END;
 		contentPane.add(preview, c);
 
 		contentPane.setName("OpenPDF");
@@ -86,9 +96,11 @@ public class OpenPanel {
 		if (goToViewMode) {
 			choose.setVisible(false);
 			preview.setVisible(true);
+			save.setVisible(true);
 		} else {
 			choose.setVisible(true);
 			preview.setVisible(false);
+			save.setVisible(false);
 		}
 
 	}
@@ -106,7 +118,6 @@ public class OpenPanel {
 		}
 	}
 
-	
 	private class ExtractAction implements Runnable {
 
 		public void run() {
@@ -141,20 +152,20 @@ public class OpenPanel {
 		}
 	}
 
-//	private class ShowPDFImageListener implements ActionListener {
-//
-//		public void actionPerformed(ActionEvent e) {
-//			// imageRendererThread = new Thread(new RenderAction());
-//			// imageRendererThread.start();
-//		}
-//	}
+	// private class ShowPDFImageListener implements ActionListener {
+	//
+	// public void actionPerformed(ActionEvent e) {
+	// // imageRendererThread = new Thread(new RenderAction());
+	// // imageRendererThread.start();
+	// }
+	// }
 
-	 private class ShowPDFResolutionsPreviewListener implements ActionListener {
-	
-	 public void actionPerformed(ActionEvent e) {
-	 Thread prev = new Thread(new ExtractAction());
-	 prev.start();
-	 }
-	 }
+	private class ShowPDFResolutionsPreviewListener implements ActionListener {
+
+		public void actionPerformed(ActionEvent e) {
+			Thread prev = new Thread(new ExtractAction());
+			prev.start();
+		}
+	}
 
 }
