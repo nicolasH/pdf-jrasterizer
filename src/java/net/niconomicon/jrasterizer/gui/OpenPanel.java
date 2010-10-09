@@ -63,7 +63,7 @@ public class OpenPanel {
 		preview.setVisible(false);
 
 		save = new JButton("Save");
-		// save.addActionListener(new ShowPDFResolutionsPreviewListener());
+		save.addActionListener(new SaveButtonListener());
 		save.setVisible(false);
 
 		// //////////////
@@ -102,7 +102,6 @@ public class OpenPanel {
 			preview.setVisible(false);
 			save.setVisible(false);
 		}
-
 	}
 
 	private class SetPDFAction implements Runnable {
@@ -119,7 +118,6 @@ public class OpenPanel {
 	}
 
 	private class ExtractAction implements Runnable {
-
 		public void run() {
 			try {
 				gui.showExtracts();
@@ -143,8 +141,6 @@ public class OpenPanel {
 					pdfFile = sourceChooser.getSelectedFile();
 					Thread t = new Thread(new SetPDFAction());
 					t.start();
-					// Thread.sleep(100);
-
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -152,13 +148,11 @@ public class OpenPanel {
 		}
 	}
 
-	// private class ShowPDFImageListener implements ActionListener {
-	//
-	// public void actionPerformed(ActionEvent e) {
-	// // imageRendererThread = new Thread(new RenderAction());
-	// // imageRendererThread.start();
-	// }
-	// }
+	private class SaveButtonListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			gui.showSaveImageDialog(0, 0, null);
+		}
+	}
 
 	private class ShowPDFResolutionsPreviewListener implements ActionListener {
 

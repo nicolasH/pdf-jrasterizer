@@ -18,6 +18,11 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  * @author niko
@@ -25,40 +30,59 @@ import javax.swing.JPanel;
  */
 public class SinglePreview extends JPanel {
 	BufferedImage extract;
-	final Dimension imageSize;
+	Dimension imageSize;
 	// final int resolution;
 	final int page;
 	final int maxPage;
 	final int extractSide;
 	final PDFRasterizerGUI gui;
-	final static int labelPanelHeigth = 60;
+	JLabel dimensionLabel;
+	final double ratio;
+	int labelPanelHeigth = 60;
+	final SpinnerNumberModel spinnerModel;
 
-	public SinglePreview(BufferedImage img, int page, int pages, Dimension imageFullSize, PDFRasterizerGUI gui) {
+	public SinglePreview(BufferedImage img, int page, int pages, Dimension imageFullSize, int extractSide, double ratio, PDFRasterizerGUI gui) {
 		super(new BorderLayout());
 		this.extract = img;
-		// this.resolution = resolution;
 		this.page = page;
 		this.maxPage = pages;
 		this.imageSize = imageFullSize;
 		this.gui = gui;
-		this.extractSide = img.getRaster().getBounds().width;
+		this.extractSide = extractSide;
+
+		this.ratio = ratio;
+		spinnerModel = new SpinnerNumberModel(5000, 500, 12000, 100);
+		spinnerModel.addChangeListener(new UpdateResolutionAction());
+
 		init();
 	}
 
 	private void init() {
 		this.setPreferredSize(new Dimension(extractSide, extractSide));
 
-		// Color transparentBackground = new Color(150, 150, 150, 192);
-
 		JButton b = new JButton("view");
 		b.setOpaque(false);
-
-		b.addActionListener(new RenderAction(Math.max(imageSize.height, imageSize.width), null, page, gui));
+		if (null == extract) {
+			b.addActionListener(new RenderAction(-1, spinnerModel, page, gui));
+		} else {
+			b.addActionListener(new RenderAction(Math.max(imageSize.height, imageSize.width), null, page, gui));
+		}
 		JPanel labels = new JPanel(new GridBagLayout());
 		JLabel l;
 		GridBagConstraints c;
 
+		JSpinner spinner = new JSpinner(spinnerModel);
+
 		int y = 0;
+
+		if (null == extract) {
+			l = new JLabel("Choose size");
+			c = new GridBagConstraints();
+			c.gridy = y++;
+			c.gridx = 0;
+			c.anchor = GridBagConstraints.WEST;
+			labels.add(l, c);
+		}
 		l = new JLabel("Page");
 		c = new GridBagConstraints();
 		c.gridy = y++;
@@ -80,6 +104,14 @@ public class SinglePreview extends JPanel {
 		labels.add(b, c);
 
 		y = 0;
+
+		if (null == extract) {
+			c = new GridBagConstraints();
+			c.gridy = y++;
+			c.gridx = 1;
+			c.anchor = GridBagConstraints.WEST;
+			labels.add(spinner, c);
+		}
 		l = new JLabel(": " + page + " /" + maxPage);
 		c = new GridBagConstraints();
 		c.gridy = y++;
@@ -87,12 +119,16 @@ public class SinglePreview extends JPanel {
 		c.anchor = GridBagConstraints.NORTHWEST;
 		labels.add(l, c);
 
-		l = new JLabel(": " + imageSize.width + "x" + imageSize.height + " px");
+		if (null != imageSize) {
+			dimensionLabel = new JLabel(": " + imageSize.width + "x" + imageSize.height + " px");
+		} else {
+			dimensionLabel = new JLabel(": " + spinnerModel.getNumber().intValue() + "x" + (int) (spinnerModel.getNumber().intValue() / ratio) + " px");
+		}
 		c = new GridBagConstraints();
 		c.gridy = y++;
 		c.gridx = 1;
 		c.anchor = GridBagConstraints.NORTHWEST;
-		labels.add(l, c);
+		labels.add(dimensionLabel, c);
 
 		b = new JButton("save");
 		b.addActionListener(new SaveAction());
@@ -108,6 +144,11 @@ public class SinglePreview extends JPanel {
 
 		// Boundaries
 
+		if (null == extract) {
+			labelPanelHeigth = 87;
+		} else {
+			labelPanelHeigth = 60;
+		}
 		int ly = extractSide - labelPanelHeigth;
 		labels.setBounds(0, ly, extractSide, labelPanelHeigth);
 
@@ -120,7 +161,7 @@ public class SinglePreview extends JPanel {
 		JPanel image = new BackgroundPanel();
 		image.setLayout(new BorderLayout());
 		if (extract == null) {
-			l = new JLabel("Too big to preview");
+			l = new JLabel("<html><body><center><p>Choose the maximum side of the image then click 'view' to see it.</p></center></body><html>");
 			image.add(l, BorderLayout.NORTH);
 			image.setOpaque(true);
 		} else {
@@ -136,6 +177,27 @@ public class SinglePreview extends JPanel {
 		this.setBorder(BorderFactory.createLineBorder(Color.black));
 	}
 
+	private class UpdateResolutionAction implements ChangeListener {
+
+		public void stateChanged(ChangeEvent e) {
+			SwingUtilities.invokeLater(new UpdateResolutionLabel());
+		}
+	}
+
+	private class UpdateResolutionLabel implements Runnable {
+		public void run() {
+			int maxSide = spinnerModel.getNumber().intValue();
+			dimensionLabel.setText(": " + maxSide + "x" + (int) (maxSide / ratio) + " px");
+			dimensionLabel.revalidate();
+		}
+
+	}
+
+	public void setExtractImage(BufferedImage extract) {
+		this.extract = extract;
+		this.revalidate();
+	}
+
 	public class BackgroundPanel extends JPanel {
 		protected void paintComponent(Graphics g) {
 			g.drawImage(extract, 0, 0, extractSide, extractSide, null);
@@ -145,7 +207,7 @@ public class SinglePreview extends JPanel {
 
 	public class SaveAction implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			gui.saveDialog.save(page, maxPage, imageSize);
+			gui.showSaveImageDialog(page, maxPage, imageSize);
 		}
 	}
 }

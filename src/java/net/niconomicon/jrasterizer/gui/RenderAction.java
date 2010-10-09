@@ -44,7 +44,7 @@ public class RenderAction implements Runnable, ActionListener {
 	public void run() {
 		try {
 			BufferedImage image = gui.service.getImageFromPDF(page, side);
-			gui.setImage(image);
+			gui.setImage(image,page);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

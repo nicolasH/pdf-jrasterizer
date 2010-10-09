@@ -97,7 +97,7 @@ public class Previewer extends JPanel {
 			System.out.println("Page " + page + " ...");
 			Dimension d = gui.service.getImageDimensions(page, defaultBiggerSize);
 			double ratio = (double) (double) d.width / (double) d.height;
-			SinglePreviewSizeChooser choo = new SinglePreviewSizeChooser(page, maxPage, extractSide, ratio, gui);
+			SinglePreview choo = new SinglePreview(null, page, maxPage, null, extractSide, ratio, gui);
 			c = new GridBagConstraints();
 			c.gridx = 0;// sizes.length;
 			c.gridy = page - 1;
@@ -130,7 +130,7 @@ public class Previewer extends JPanel {
 			d = gui.service.getImageDimensions(page, side);
 			SinglePreview pre;
 			BufferedImage img = gui.service.getExtract(page, side, extractSide);
-			pre = new SinglePreview(img, page, maxPage, d, gui);
+			pre = new SinglePreview(img, page, maxPage, d, extractSide, 0, gui);
 			GridBagConstraints c = new GridBagConstraints();
 			c.gridx = x + 1;
 			c.gridy = page - 1;

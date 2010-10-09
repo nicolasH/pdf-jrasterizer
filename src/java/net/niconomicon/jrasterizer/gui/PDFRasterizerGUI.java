@@ -43,6 +43,8 @@ public class PDFRasterizerGUI {
 	File currentFile;
 	Executor exe;
 
+	int currentPage = 0;
+
 	public PDFRasterizerGUI() {
 
 		frame = new JFrame();
@@ -81,16 +83,35 @@ public class PDFRasterizerGUI {
 		return currentFile;
 	}
 
-	public void setImage(BufferedImage image) {
+	public void setImage(BufferedImage image, int page) {
 		this.img = image;
 		jaiPanel.set(this.img);
 		contentPane.remove(previewSP);
 		previewSP.setVisible(false);
 		jaiSP.setVisible(true);
+		jaiPanel.revalidate();
 		contentPane.add(jaiSP, BorderLayout.CENTER);
 		contentPane.revalidate();
 		jaiSP.revalidate();
 		openPanel.switchToViewMode(true);
+		this.currentPage = page;
+	}
+
+	public void showSaveImageDialog(int page, int maxPage, Dimension sides) {
+		if (page == 0) {
+			page = currentPage;
+		}
+		if (maxPage == 0) {
+			maxPage = service.getPageCount();
+		}
+		if (null == sides) {
+			if (null != img) {
+				sides = new Dimension(img.getWidth(), img.getHeight());
+			} else {
+				throw new IllegalArgumentException("Someone tried to call the save method while not giving correct arguments : the desired dimensions are null and no image was displayed so it cannot guess it.");
+			}
+		}
+		saveDialog.save(page, maxPage, sides);
 	}
 
 	public void showExtracts() {
