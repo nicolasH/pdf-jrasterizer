@@ -25,7 +25,11 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 /**
- * @author niko
+ * This class is used to display an extract of an image with some information about the original image.
+ * It also provides ways to view the original image or save it. 
+ * If an extract is not provided, this class will allow the user to choose at which size the image should be displayed/ saved. 
+ * 
+ * @author Nicolas Hoibian
  * 
  */
 public class SinglePreview extends JPanel {
@@ -190,7 +194,6 @@ public class SinglePreview extends JPanel {
 			dimensionLabel.setText(": " + maxSide + "x" + (int) (maxSide / ratio) + " px");
 			dimensionLabel.revalidate();
 		}
-
 	}
 
 	public void setExtractImage(BufferedImage extract) {

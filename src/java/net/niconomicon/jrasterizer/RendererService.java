@@ -1,7 +1,7 @@
 /**
  * 
  */
-package net.niconomicon.jrasterizer.gui;
+package net.niconomicon.jrasterizer;
 
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
@@ -16,14 +16,15 @@ import net.niconomicon.jrasterizer.utils.TestMemory;
 import com.sun.pdfview.PDFFile;
 
 /**
- * As there seems to be a memory leak in the {@link PDFFile} class, this class tries to work around it by always having
- * at least one renderer available.;
+ * This class triggers the flushPage for each page when the available memory gets under 40 percent of the original
+ * available memory.
  * 
  * @author Nicolas Hoibian
  * 
  */
 public class RendererService implements PDFToImage {
 
+	public static final long CHECK_INTERVAL = 50;
 	PDFToImage renderer;
 	File pdffile;
 
@@ -52,7 +53,7 @@ public class RendererService implements PDFToImage {
 		return new RendererService(type, pdf);
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see net.niconomicon.jrasterizer.PDFToImage#setReferenceResolution(double)
 	 */
 	public void setReferenceResolution(double ref) {
@@ -62,14 +63,14 @@ public class RendererService implements PDFToImage {
 		}
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see net.niconomicon.jrasterizer.PDFToImage#getFileLocation()
 	 */
 	public String getFileLocation() {
 		return pdffile.getAbsolutePath();
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see net.niconomicon.jrasterizer.PDFToImage#setPDFFromFileLocation(java.lang.String)
 	 */
 	public void setPDFFromFileLocation(String pdfLocation) throws IOException {
@@ -79,7 +80,7 @@ public class RendererService implements PDFToImage {
 		}
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see net.niconomicon.jrasterizer.PDFToImage#setPDFFromFile(java.io.File)
 	 */
 	public void setPDFFromFile(File pdfLocation) throws IOException {
@@ -90,7 +91,7 @@ public class RendererService implements PDFToImage {
 		}
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see net.niconomicon.jrasterizer.PDFToImage#getPageCount()
 	 */
 	public int getPageCount() {
@@ -99,7 +100,7 @@ public class RendererService implements PDFToImage {
 		}
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see net.niconomicon.jrasterizer.PDFToImage#getImageDimensions(int, int)
 	 */
 	public Dimension getImageDimensions(int pageNum, int info) {
@@ -108,7 +109,7 @@ public class RendererService implements PDFToImage {
 		}
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see net.niconomicon.jrasterizer.PDFToImage#getImageFromPDF(int, int)
 	 */
 	public BufferedImage getImageFromPDF(int pageNum, int info) {
@@ -117,7 +118,7 @@ public class RendererService implements PDFToImage {
 		}
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see net.niconomicon.jrasterizer.PDFToImage#getExtract(int, int, int)
 	 */
 	public BufferedImage getExtract(int pageNum, int info, int clipSize) {
@@ -140,21 +141,15 @@ public class RendererService implements PDFToImage {
 
 	private class RendererSwitcher implements Runnable {
 		PDFToImageRenderer a;
-		PDFToImageRenderer b;
 
 		double baselineMemory;
-		double threshold = 0.35;
-		double emergencyThreshold = 0.15;
+		double threshold = 0.4;
 
 		public RendererSwitcher() {
-			a = null;
-			b = null;
 			a = initRenderer();
 			current = a;
-			b = initRenderer();
 			baselineMemory = TestMemory.getAvailableMemory();
 			threshold = 0.40 * baselineMemory;
-			emergencyThreshold = 0.2 * baselineMemory;
 			System.out.println("Threshold :" + threshold);
 		}
 
@@ -168,7 +163,6 @@ public class RendererService implements PDFToImage {
 						mem = TestMemory.getAvailableMemory();
 						if (mem < threshold) {
 							if (lastMem >= threshold && !emergency) {
-								// take action
 								System.out.println("taking action : free mem = " + ("" + mem).substring(0, 5) + "% - Flushing all pages");
 								a.flushAllPages();
 							}
@@ -177,7 +171,7 @@ public class RendererService implements PDFToImage {
 						}
 					}
 					lastMem = mem;
-					Thread.sleep(50);
+					Thread.sleep(CHECK_INTERVAL);
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}

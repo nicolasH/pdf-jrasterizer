@@ -28,6 +28,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 
 /**
+ * This class provides static methods to extract a rectangular part of a given image.
  * @author Nicolas Hoibian
  * 
  */

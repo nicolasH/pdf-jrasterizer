@@ -13,11 +13,14 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import net.niconomicon.jrasterizer.gui.RendererService.RASTERIZER_TYPE;
+import net.niconomicon.jrasterizer.RendererService;
+import net.niconomicon.jrasterizer.RendererService.RASTERIZER_TYPE;
 
 import com.sun.media.jai.widget.DisplayJAI;
 
 /**
+ * 
+ * The 'main' class, which is also the main frame class.
  * @author Nicolas Hoibian copyright August 2010
  * 
  */

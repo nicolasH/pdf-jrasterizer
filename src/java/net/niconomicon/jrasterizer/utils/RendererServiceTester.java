@@ -5,10 +5,9 @@ package net.niconomicon.jrasterizer.utils;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 
-import net.niconomicon.jrasterizer.gui.RendererService;
-import net.niconomicon.jrasterizer.gui.RendererService.RASTERIZER_TYPE;
+import net.niconomicon.jrasterizer.RendererService;
+import net.niconomicon.jrasterizer.RendererService.RASTERIZER_TYPE;
 
 /**
  * @author Nicolas Hoibian
@@ -29,7 +28,6 @@ public class RendererServiceTester {
 				BufferedImage img = service.getImageFromPDF(page, 10000);
 				System.out.println("Iteration : " + i + " Page :" + page + " dims : " + img.getWidth() + " x " + img.getHeight() + " Available memory : " + TestMemory.getAvailableMemory());
 				img = null;
-//				service.flushPage(page);
 				Thread.sleep(100);
 			}
 		}
