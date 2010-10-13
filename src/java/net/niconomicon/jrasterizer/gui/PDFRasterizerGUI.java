@@ -8,6 +8,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
@@ -21,6 +22,7 @@ import com.sun.media.jai.widget.DisplayJAI;
 /**
  * 
  * The 'main' class, which is also the main frame class.
+ * 
  * @author Nicolas Hoibian copyright August 2010
  * 
  */
@@ -29,6 +31,7 @@ public class PDFRasterizerGUI {
 	JFrame frame;
 
 	public static final String USER_HOME = "user.home";
+	public static final String WELCOME_TEXT_STRING = "<html><body><center><b>Welcome.</b> <p>This app is based on the pdf-renderer library from java.net " + "(https://pdf-renderer.dev.java.net/) . This app is under light development and is therefore limited in scope and functionnality. The pdf-renderer library is also under development, and is not perfect yet. There might be some rendering issues with PDFs" + " that embed fonts, advanced PDF function for gradients or odd formatting.</p></center></body></html>";
 
 	JPanel contentPane;
 
@@ -46,9 +49,14 @@ public class PDFRasterizerGUI {
 	File currentFile;
 	Executor exe;
 
+	JLabel errorPanel;
+
 	int currentPage = 0;
 
 	public PDFRasterizerGUI() {
+
+		errorPanel = new JLabel(WELCOME_TEXT_STRING);
+		ErrorReporter.createErrorReporter(errorPanel);
 
 		frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

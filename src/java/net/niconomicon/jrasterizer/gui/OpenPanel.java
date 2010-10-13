@@ -77,7 +77,7 @@ public class OpenPanel {
 		c.gridy = 0;
 		c.weightx = 1.0;
 		c.fill = c.HORIZONTAL;
-		contentPane.add(new JLabel(" "), c);
+		contentPane.add(gui.errorPanel, c);
 
 		c = new GridBagConstraints();
 		c.gridy = 0;

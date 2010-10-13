@@ -9,7 +9,7 @@ import java.awt.GridBagLayout;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import javax.swing.JLabel;
@@ -29,7 +29,7 @@ public class Previewer extends JPanel {
 	PDFRasterizerGUI gui;
 	String pdfFile;
 
-	ExecutorService previewQueue;
+	Executor previewQueue;
 
 	public Previewer(PDFRasterizerGUI gui) {
 		super();
@@ -92,7 +92,7 @@ public class Previewer extends JPanel {
 		this.add(l, c);
 
 		this.revalidate();
-
+		ErrorReporter.displayError("Creating PDF extracts at different sizes...");
 		for (int page = 1; page <= maxPage; page++) {
 			System.out.println("Page " + page + " ...");
 			Dimension d = gui.service.getImageDimensions(page, defaultBiggerSize);
@@ -110,6 +110,11 @@ public class Previewer extends JPanel {
 			}
 		}
 		this.revalidate();
+		previewQueue.execute(new Runnable() {
+			public void run() {
+				ErrorReporter.displayError("Click on 'view' to see the full page renderered at that size.");
+			}
+		});
 	}
 
 	public class PostPonner implements Runnable {
