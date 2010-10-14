@@ -48,6 +48,7 @@ public class Previewer extends JPanel {
 	}
 
 	public void setPDFToPreview(File pdffile) throws IOException {
+		
 		this.removeAll();
 		this.revalidate();
 		pdfFile = pdffile.getAbsolutePath();
@@ -56,6 +57,8 @@ public class Previewer extends JPanel {
 			this.getComponent(i).setVisible(false);
 		}
 		this.repaint();
+		
+		if (gui.service == null) { return; }
 
 		int maxPage = gui.service.getPageCount();
 

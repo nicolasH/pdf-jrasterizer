@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -18,6 +19,7 @@ import net.niconomicon.jrasterizer.RendererService;
 import net.niconomicon.jrasterizer.RendererService.RASTERIZER_TYPE;
 
 import com.sun.media.jai.widget.DisplayJAI;
+import com.sun.pdfview.PDFParseException;
 
 /**
  * 
@@ -85,7 +87,15 @@ public class PDFRasterizerGUI {
 
 	public void setPDFFile(File f) {
 		currentFile = f;
-		service = RendererService.createService(RASTERIZER_TYPE.PIXELS, f);
+		try {
+			service = RendererService.createService(RASTERIZER_TYPE.PIXELS, f);
+		} catch (IOException ex) {
+			if (ex instanceof PDFParseException) {
+				ErrorReporter.displayError("Sorry. The PDF could not be parsed");
+			} else {
+				ErrorReporter.displayError("Sorry. The PDF could not be opened");
+			}
+		}
 		this.frame.setTitle(f.getAbsolutePath());
 		saveDialog.setCurrentFile(f);
 	}

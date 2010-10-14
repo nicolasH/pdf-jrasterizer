@@ -8,12 +8,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-import net.niconomicon.jrasterizer.PDFToImage;
-import net.niconomicon.jrasterizer.PDFToImageRenderer;
 import net.niconomicon.jrasterizer.PDFToImageRenderer.UNIT;
 import net.niconomicon.jrasterizer.utils.TestMemory;
-
-import com.sun.pdfview.PDFFile;
 
 /**
  * This class triggers the flushPage for each page when the available memory gets under 40 percent of the original
@@ -41,7 +37,7 @@ public class RendererService implements PDFToImage {
 		DPI, PIXELS
 	};
 
-	private RendererService(RASTERIZER_TYPE type, File pdf) {
+	private RendererService(RASTERIZER_TYPE type, File pdf)throws IOException {
 		this.type = type;
 		pdffile = pdf;
 		lock = new Object();
@@ -49,7 +45,7 @@ public class RendererService implements PDFToImage {
 		switcherThread.start();
 	}
 
-	public static RendererService createService(RASTERIZER_TYPE type, File pdf) {
+	public static RendererService createService(RASTERIZER_TYPE type, File pdf) throws IOException{
 		return new RendererService(type, pdf);
 	}
 
@@ -145,7 +141,7 @@ public class RendererService implements PDFToImage {
 		double baselineMemory;
 		double threshold = 0.4;
 
-		public RendererSwitcher() {
+		public RendererSwitcher() throws IOException{
 			a = initRenderer();
 			current = a;
 			baselineMemory = TestMemory.getAvailableMemory();
@@ -178,7 +174,7 @@ public class RendererService implements PDFToImage {
 			}
 		}
 
-		public PDFToImageRenderer initRenderer() {
+		public PDFToImageRenderer initRenderer()throws IOException {
 			PDFToImageRenderer ren = null;
 
 			UNIT unit = UNIT.PIXEL;
@@ -191,11 +187,7 @@ public class RendererService implements PDFToImage {
 				unit = UNIT.PIXEL;
 				break;
 			}
-			try {
 				ren = new PDFToImageRenderer(unit, pdffile);
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
 			return ren;
 		}
 	}
