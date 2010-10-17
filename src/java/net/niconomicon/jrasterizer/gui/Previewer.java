@@ -48,7 +48,7 @@ public class Previewer extends JPanel {
 	}
 
 	public void setPDFToPreview(File pdffile) throws IOException {
-		
+
 		this.removeAll();
 		this.revalidate();
 		pdfFile = pdffile.getAbsolutePath();
@@ -57,7 +57,7 @@ public class Previewer extends JPanel {
 			this.getComponent(i).setVisible(false);
 		}
 		this.repaint();
-		
+
 		if (gui.service == null) { return; }
 
 		int maxPage = gui.service.getPageCount();
@@ -97,18 +97,7 @@ public class Previewer extends JPanel {
 		this.revalidate();
 		ErrorReporter.displayError("Creating PDF extracts at different sizes...");
 		for (int page = 1; page <= maxPage; page++) {
-			System.out.println("Page " + page + " ...");
-			Dimension d = gui.service.getImageDimensions(page, defaultBiggerSize);
-			double ratio = (double) (double) d.width / (double) d.height;
-			SinglePreview choo = new SinglePreview(null, page, maxPage, null, extractSide, ratio, gui);
-			c = new GridBagConstraints();
-			c.gridx = 0;// sizes.length;
-			c.gridy = page - 1;
-			c.fill = GridBagConstraints.NONE;
-			c.anchor = GridBagConstraints.FIRST_LINE_START;
-			this.add(choo, c);
-			this.revalidate();
-			for (int step = 0; step < sizes.length; step++) {
+			for (int step = 0; step <= sizes.length; step++) {
 				previewQueue.execute(new PostPonner(page, step, maxPage));
 			}
 		}
@@ -134,13 +123,20 @@ public class Previewer extends JPanel {
 
 		public void run() {
 			Dimension d;
-			int side = sizes[x];
-			d = gui.service.getImageDimensions(page, side);
 			SinglePreview pre;
-			BufferedImage img = gui.service.getExtract(page, side, extractSide);
-			pre = new SinglePreview(img, page, maxPage, d, extractSide, 0, gui);
+			if (x < sizes.length) {
+				int side = sizes[x];
+				d = gui.service.getImageDimensions(page, side);
+				ErrorReporter.displayError("Page " + page + " / " + maxPage + " : getting extract for size " + d.width + "x" + d.height + " ...");
+				BufferedImage img = gui.service.getExtract(page, side, extractSide);
+				pre = new SinglePreview(img, page, maxPage, d, extractSide, 0, gui);
+			} else {
+				d = gui.service.getImageDimensions(page, defaultBiggerSize);
+				double ratio = (double) (double) d.width / (double) d.height;
+				pre = new SinglePreview(null, page, maxPage, null, extractSide, ratio, gui);
+			}
 			GridBagConstraints c = new GridBagConstraints();
-			c.gridx = x + 1;
+			c.gridx = x;
 			c.gridy = page - 1;
 			c.fill = GridBagConstraints.NONE;
 			c.anchor = GridBagConstraints.NORTHWEST;

@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.niconomicon</groupId>
 	<artifactId>pdf-jrasterizer</artifactId>
-	<version>0.0.3</version>
+	<version>0.0.4</version>
 	<url>http://www.niconomicon.net/tests/maven/net/niconomicon/pdf-jrasterizer/</url>
 	<dependencies>
 		<dependency>
