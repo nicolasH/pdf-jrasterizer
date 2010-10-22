@@ -167,10 +167,12 @@ public class PDFRasterizerGUI {
 	 */
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
-		UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+		String nimbus = "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel";
 		for (int i = 0; i < UIManager.getInstalledLookAndFeels().length; i++) {
-			System.out.println("lnfs : " + UIManager.getInstalledLookAndFeels()[i]);
+			if (nimbus.compareTo(UIManager.getInstalledLookAndFeels()[i].getClassName()) == 0) {
+				UIManager.setLookAndFeel(nimbus);
+			}
 		}
-		PDFRasterizerGUI rast = new PDFRasterizerGUI();
+		PDFRasterizerGUI gui = new PDFRasterizerGUI();
 	}
 }
