@@ -23,7 +23,7 @@ public class Previewer extends JPanel {
 
 	public int extractSide = 200;
 	public static final int LIMIT = 10000;
-	public static final int[] sizes = new int[] { 500, 1000, 2000, 4000 };// , 6000, 9000 };
+	public static final int[] sizes = new int[] { 500, 1000, 2000, 3000 };// , 6000, 9000 };
 	public static final int defaultBiggerSize = 5000;
 	// public static final int[] sizes = new int[] { 4000, 2000, 1000, 500 };// , 6000, 9000 };
 	PDFRasterizerGUI gui;

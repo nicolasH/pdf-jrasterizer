@@ -14,7 +14,7 @@
   </security>
 
     <resources>
-        <j2se version="1.6+" java-vm-args="-Xmx1024M"/>
+        <j2se version="1.5+" java-vm-args="-Xmx1024M"/>
         $dependencies
 	</resources>
 	<application-desc main-class="$mainClass"/>

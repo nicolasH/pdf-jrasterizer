@@ -25,9 +25,9 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 /**
- * This class is used to display an extract of an image with some information about the original image.
- * It also provides ways to view the original image or save it. 
- * If an extract is not provided, this class will allow the user to choose at which size the image should be displayed/ saved. 
+ * This class is used to display an extract of an image with some information about the original image. It also provides
+ * ways to view the original image or save it. If an extract is not provided, this class will allow the user to choose
+ * at which size the image should be displayed/ saved.
  * 
  * @author Nicolas Hoibian
  * 
@@ -162,7 +162,8 @@ public class SinglePreview extends JPanel {
 		background.setBounds(0, 0, extractSide, extractSide);
 		background.setOpaque(true);
 
-		JPanel image = new BackgroundPanel();
+		BackgroundPanel image = new BackgroundPanel();
+		image.setImage(extract);
 		image.setLayout(new BorderLayout());
 		if (extract == null) {
 			l = new JLabel("<html><body><center><p>Choose the maximum side of the image then click 'view' to see it.</p></center></body><html>");
@@ -199,13 +200,6 @@ public class SinglePreview extends JPanel {
 	public void setExtractImage(BufferedImage extract) {
 		this.extract = extract;
 		this.revalidate();
-	}
-
-	public class BackgroundPanel extends JPanel {
-		protected void paintComponent(Graphics g) {
-			g.drawImage(extract, 0, 0, extractSide, extractSide, null);
-			super.paintComponent(g);
-		}
 	}
 
 	public class SaveAction implements ActionListener {

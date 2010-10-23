@@ -12,7 +12,7 @@ import net.niconomicon.jrasterizer.PDFToImageRenderer.UNIT;
 import net.niconomicon.jrasterizer.utils.TestMemory;
 
 /**
- * This class triggers the flushPage for each page when the available memory gets under 40 percent of the original
+ * This is a proxy for the PDFToImageRenderer . its added value is that it triggers the flushPage for each page when the available memory gets under 40 percent of the original
  * available memory.
  * 
  * @author Nicolas Hoibian

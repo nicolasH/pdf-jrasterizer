@@ -18,7 +18,7 @@ import javax.swing.UIManager;
 import net.niconomicon.jrasterizer.RendererService;
 import net.niconomicon.jrasterizer.RendererService.RASTERIZER_TYPE;
 
-import com.sun.media.jai.widget.DisplayJAI;
+//import com.sun.media.jai.widget.DisplayJAI;
 import com.sun.pdfview.PDFParseException;
 
 /**
@@ -37,7 +37,9 @@ public class PDFRasterizerGUI {
 
 	JPanel contentPane;
 
-	DisplayJAI jaiPanel;
+	BackgroundPanel imagePanel;
+	// DisplayJAI is a system dependent binary from https://jai-core.dev.java.net/
+	// DisplayJAI jaiPanel;
 	Previewer previewer;
 
 	// SavePanel savePanel;
@@ -47,13 +49,15 @@ public class PDFRasterizerGUI {
 	BufferedImage img;
 
 	JScrollPane previewSP;
-	JScrollPane jaiSP;
+	JScrollPane imageSP;
 	File currentFile;
 	Executor exe;
 
 	JLabel errorPanel;
 
 	int currentPage = 0;
+
+	boolean JAI_exists = false;
 
 	public PDFRasterizerGUI() {
 
@@ -68,8 +72,8 @@ public class PDFRasterizerGUI {
 		openPanel = new OpenPanel(this);
 		saveDialog = new SaveDialog(this);
 
-		jaiPanel = new DisplayJAI();
-		jaiSP = new JScrollPane(jaiPanel);
+		imagePanel = new BackgroundPanel();
+		imageSP = new JScrollPane(imagePanel);
 
 		previewer = new Previewer(this);
 		previewSP = new JScrollPane(previewer);
@@ -106,16 +110,20 @@ public class PDFRasterizerGUI {
 
 	public void setImage(BufferedImage image, int page) {
 		this.img = image;
-		jaiPanel.set(this.img);
+		imagePanel.setImage(image);
+		imagePanel.setOpaque(false);
+		imagePanel.invalidate();
 		contentPane.remove(previewSP);
 		previewSP.setVisible(false);
-		jaiSP.setVisible(true);
-		jaiPanel.revalidate();
-		contentPane.add(jaiSP, BorderLayout.CENTER);
-		contentPane.revalidate();
-		jaiSP.revalidate();
+
+		contentPane.add(imageSP, BorderLayout.CENTER);
+		imagePanel.setVisible(true);
+		imageSP.setVisible(true);
+		imagePanel.revalidate();
+		imageSP.revalidate();
 		openPanel.switchToViewMode(true);
 		this.currentPage = page;
+		ErrorReporter.displayError("");
 	}
 
 	public void showSaveImageDialog(int page, int maxPage, Dimension sides) {
@@ -136,8 +144,8 @@ public class PDFRasterizerGUI {
 	}
 
 	public void showExtracts() {
-		contentPane.remove(jaiSP);
-		jaiSP.setVisible(false);
+		contentPane.remove(imageSP);
+		imageSP.setVisible(false);
 		previewSP.setVisible(true);
 		contentPane.add(previewSP, BorderLayout.CENTER);
 		if (previewer.getPDFToPreview() == null || previewer.getPDFToPreview().compareTo(currentFile.getAbsolutePath()) != 0) {
@@ -156,6 +164,7 @@ public class PDFRasterizerGUI {
 		previewSP.revalidate();
 		contentPane.revalidate();
 		previewSP.repaint();
+		ErrorReporter.displayError("");
 	}
 
 	public void addAction(Runnable action) {
