@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jnlp spec="1.0+" codebase="http://www.niconomicon.net/tests/maven/net/niconomicon/pdf-jrasterizer/" 
-<!--href="pdf-jrasterizer.jnlp"-->>
+<jnlp spec="1.0+" codebase="$project.url">
     <information>
-        <title>PDF-JRasterizer</title>
+        <title>$project.Name</title>
         <vendor>Nicolas Hoibian</vendor>
         <description>pdf-jrasterizer</description>
         <description kind="short">pdf-jrasterizer</description>
