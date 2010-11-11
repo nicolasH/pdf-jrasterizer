@@ -223,9 +223,10 @@ public class SaveDialog {
 		c.fill = GridBagConstraints.HORIZONTAL;
 		contentPane.add(as, c);
 
+		y++;
 		c = new GridBagConstraints();
 		c.gridy = y++;
-		c.gridx = x;
+		c.gridx = 0;
 		c.gridwidth = 2;
 		c.gridheight = 3;
 		c.weightx = 1.0;
@@ -261,26 +262,32 @@ public class SaveDialog {
 					gui.addAction(new SaveAction(p, Math.max(dim.width, dim.height), getImageFormat(), getFinalName(p), gui));
 				}
 			} else {
-				gui.addAction(new SaveAction(page, Math.max(dim.width, dim.height), getImageFormat(), getFinalName(page), gui));
+				gui.addAction(new SaveAction(page, Math.max(dim.width, dim.height), getImageFormat(), getFinalName(0), gui));
 			}
 		}
 	}
 
 	public void setFinalName() {
 		System.out.println("Setting final name. " + to.getText());
+		String text;
 		if (pageCurrent.isSelected()) {
-			finalName.setText(to.getText() + File.separator + as.getText() + "." + getImageFormat());
+			text = to.getText() + File.separator + as.getText() + "." + getImageFormat();
+			finalName.setText(text);
+			finalName.setToolTipText(text);
 		} else {
 			if (maxPage == 1) {
-				finalName.setText(to.getText() + File.separator + as.getText() + "_1." + getImageFormat());
+				text=to.getText() + File.separator + as.getText() + "_1." + getImageFormat();
+				finalName.setText(text);
+				finalName.setToolTipText(text);
 				return;
 			}
-			String text = "<html><body>";
+			text = "<html><body>";
 			for (int i = 1; i <= Math.min(2, maxPage); i++) {
 				text += to.getText() + File.separator + as.getText() + "_" + i + "." + getImageFormat() + "<br>";
 			}
 			text += "...</body></html>";
 			finalName.setText(text);
+			finalName.setToolTipText(text);
 		}
 		finalName.revalidate();
 	}
