@@ -33,7 +33,7 @@ public class PDFRasterizerGUI {
 	JFrame frame;
 
 	public static final String USER_HOME = "user.home";
-	public static final String WELCOME_TEXT_STRING = "<html><body><center><b>Welcome.</b> <p>This app is based on the pdf-renderer library from java.net " + "(https://pdf-renderer.dev.java.net/) . This app is under light development and is therefore limited in scope and functionnality. The pdf-renderer library is also under development, and is not perfect yet. There might be some rendering issues with PDFs" + " that embed fonts, advanced PDF function for gradients or odd formatting.</p></center></body></html>";
+	public static final String WELCOME_TEXT_STRING = "<html><body><center><b>Welcome.</b></center><p>This app is based on the pdf-renderer library from java.net " + "(https://pdf-renderer.dev.java.net/) . This app is under light development and is therefore limited in scope and functionnality. The pdf-renderer library is also under development, and is not perfect yet. There might be some rendering issues with PDFs" + " that embed fonts, advanced PDF function for gradients or odd formatting.</p></body></html>";
 
 	JPanel contentPane;
 
