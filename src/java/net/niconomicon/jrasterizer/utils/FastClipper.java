@@ -47,14 +47,21 @@ public class FastClipper {
 	 * http://stackoverflow.com/questions/2825837/java-how-to-do-fast-copy-of-a-bufferedimages-pixels-unit-test-included
 	 * Does an arraycopy of the rasters .
 	 * 
-	 * @param src
-	 * @param clip
+	 * @param src source image.
+	 * @param clip the part of the image that you want.
 	 * @return an image which is identical to the part of the image of src in the area described by clip.
 	 */
 	public static BufferedImage fastClip(final BufferedImage src, Rectangle clip) {
 		return fastClip(src, clip, false);
 	}
 
+
+	/**
+	 * @param src source image.
+	 * @param clip the part of the image that you want.
+	 * @param flipVertically should the image be flipped vertically ?
+	 * @return an independent copy of the part of the image described by clip, flipped vertically according to 'flipVertically'. 
+	 */
 	public static BufferedImage fastClip(final BufferedImage src, Rectangle clip, boolean flipVertically) {
 		BufferedImage dst = new BufferedImage(clip.width, clip.height, src.getType());
 
