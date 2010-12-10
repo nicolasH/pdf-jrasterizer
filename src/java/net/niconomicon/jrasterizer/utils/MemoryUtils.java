@@ -8,7 +8,7 @@ package net.niconomicon.jrasterizer.utils;
  * @author niko
  * 
  */
-public class TestMemory {
+public class MemoryUtils {
 
 	/**
 	 * @param args

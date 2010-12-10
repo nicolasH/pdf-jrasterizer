@@ -9,10 +9,10 @@ import java.io.File;
 import java.io.IOException;
 
 import net.niconomicon.jrasterizer.PDFToImageRenderer.UNIT;
-import net.niconomicon.jrasterizer.utils.TestMemory;
+import net.niconomicon.jrasterizer.utils.MemoryUtils;
 
 /**
- * This is a proxy for the PDFToImageRenderer . its added value is that it triggers the flushPage for each page when the available memory gets under 40 percent of the original
+ * This is a proxy for the PDFToImageRenderer . Its added value is that it triggers the flushPage for each page when the available memory gets under 40 percent of the memory allocated to the process (-Xmx)
  * available memory.
  * 
  * @author Nicolas Hoibian
@@ -144,7 +144,7 @@ public class RendererService implements PDFToImage {
 		public RendererSwitcher() throws IOException{
 			a = initRenderer();
 			current = a;
-			baselineMemory = TestMemory.getAvailableMemory();
+			baselineMemory = MemoryUtils.getAvailableMemory();
 			threshold = 0.40 * baselineMemory;
 			System.out.println("Threshold :" + threshold);
 		}
@@ -156,7 +156,7 @@ public class RendererService implements PDFToImage {
 			while (!shouldStop) {
 				try {
 					synchronized (lock) {
-						mem = TestMemory.getAvailableMemory();
+						mem = MemoryUtils.getAvailableMemory();
 						if (mem < threshold) {
 							if (lastMem >= threshold && !emergency) {
 								System.out.println("taking action : free mem = " + ("" + mem).substring(0, 5) + "% - Flushing all pages");

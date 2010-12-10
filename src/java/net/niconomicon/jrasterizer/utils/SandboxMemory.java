@@ -42,20 +42,20 @@ public class SandboxMemory {
 				BufferedImage img = ren.getExtract(i, side, 200);
 				img = null;
 				System.out.print("page : " + i + " Before reset : Memory infos : ");
-				TestMemory.printMemoryInfo();
+				MemoryUtils.printMemoryInfo();
 				ren = null;
 				System.gc();
 				Thread.sleep(1000);
 				System.gc();
 				System.out.print("page : " + i + " After reset  : Memory infos : ");
-				TestMemory.printMemoryInfo();
+				MemoryUtils.printMemoryInfo();
 			}
 			ren = null;
 			Thread.sleep(1000);
 			System.gc();
 			Thread.sleep(1000);
 			System.out.print("After iteration : " + n + " Memory infos : ");
-			TestMemory.printMemoryInfo();
+			MemoryUtils.printMemoryInfo();
 		}
 	}
 }

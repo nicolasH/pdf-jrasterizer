@@ -26,7 +26,7 @@ public class RendererServiceTester {
 		for (int i = 0; i < n; i++) {
 			for (int page = 1; page <= maxPage; page++) {
 				BufferedImage img = service.getImageFromPDF(page, 10000);
-				System.out.println("Iteration : " + i + " Page :" + page + " dims : " + img.getWidth() + " x " + img.getHeight() + " Available memory : " + TestMemory.getAvailableMemory());
+				System.out.println("Iteration : " + i + " Page :" + page + " dims : " + img.getWidth() + " x " + img.getHeight() + " Available memory : " + MemoryUtils.getAvailableMemory());
 				img = null;
 				Thread.sleep(100);
 			}
